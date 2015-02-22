@@ -1,31 +1,34 @@
+#include <iostream>
 #include <SFML/Graphics.hpp>
 
 class Game
 {
     public:
-                            Game();
-        void                run();
+                                Game();
+        void                    run();
 
     private:
-        void                processEvents();
-        void                update(sf::Time frameTime);
-        void                render();
+        void                    processEvents();
+        void                    update(sf::Time frameTime);
+        void                    render();
 
-        void                handlePlayerInput(sf::Keyboard::Key key, bool isPressed);
+        void                    handlePlayerInput(sf::Keyboard::Key key, bool isPressed);
 
     private:
-        static const float  PlayerSpeed;
+        static const float      PlayerSpeed;
+        static const sf::Time   TimePerFrame;
 
-        sf::RenderWindow    mWindow;
-        sf::CircleShape     mPlayer;
+        sf::RenderWindow        mWindow;
+        sf::CircleShape         mPlayer;
 
-        bool                mIsMovingUp;
-        bool                mIsMovingDown;
-        bool                mIsMovingLeft;
-        bool                mIsMovingRight;
+        bool                    mIsMovingUp;
+        bool                    mIsMovingDown;
+        bool                    mIsMovingLeft;
+        bool                    mIsMovingRight;
 };
 
 const float Game::PlayerSpeed = 250.f;
+const sf::Time Game::TimePerFrame = sf::seconds(1.f / 60.f);
 
 Game::Game()
 : mWindow(sf::VideoMode(640, 480), "Crank Game", sf::Style::Close)
@@ -43,12 +46,25 @@ Game::Game()
 void Game::run()
 {
     sf::Clock clock;
+    sf::Time timeSinceLastUpdate = sf::Time::Zero;
 
     while (mWindow.isOpen())
     {
-        sf::Time frameTime = clock.restart();
+        timeSinceLastUpdate += clock.restart();
         processEvents();
-        update(frameTime);
+
+        std::cout << "timeSinceLastUpdate: " << timeSinceLastUpdate.asMilliseconds() << ". before" << std::endl;
+
+        while (timeSinceLastUpdate > TimePerFrame)
+        {
+            timeSinceLastUpdate -= TimePerFrame;
+
+            processEvents();
+            update(TimePerFrame);
+        }
+
+        std::cout << "timeSinceLastUpdate: " << timeSinceLastUpdate.asMilliseconds() << ". after" << std::endl;
+
         render();
     }
 }
@@ -78,21 +94,25 @@ void Game::processEvents()
 
 void Game::handlePlayerInput(sf::Keyboard::Key key, bool isPressed)
 {
+    // movement
     if (key == sf::Keyboard::W)
         mIsMovingUp = isPressed;
-    else if (key == sf::Keyboard::S)
+    if (key == sf::Keyboard::S)
         mIsMovingDown = isPressed;
-    else if (key == sf::Keyboard::A)
+    if (key == sf::Keyboard::A)
         mIsMovingLeft = isPressed;
-    else if (key == sf::Keyboard::D)
+    if (key == sf::Keyboard::D)
         mIsMovingRight = isPressed;
-    else if (key == sf::Keyboard::Escape && isPressed)
+
+    // exit
+    if (key == sf::Keyboard::Escape && isPressed)
         mWindow.close();
 }
 
 void Game::update(sf::Time frameTime)
 {
     sf::Vector2f movement(0.f, 0.f);
+
     if (mIsMovingUp)
         movement.y -= PlayerSpeed;
     if (mIsMovingDown)
