@@ -1,26 +1,64 @@
 #include <SFML/Graphics.hpp>
 
+class Game
+{
+    public:
+                            Game();
+        void                run();
+
+    private:
+        void                processEvents();
+        void                update();
+        void                render();
+
+    private:
+        sf::RenderWindow    mWindow;
+        sf::CircleShape     mPlayer;
+};
+
+Game::Game()
+: mWindow(sf::VideoMode(640, 480), "Crank Game")
+, mPlayer()
+{
+    mPlayer.setRadius(40.f);
+    mPlayer.setPosition(100.f, 100.f);
+    mPlayer.setFillColor(sf::Color::Cyan);
+}
+
+void Game::run()
+{
+    while (mWindow.isOpen())
+    {
+        processEvents();
+        update();
+        render();
+    }
+}
+
+void Game::processEvents()
+{
+    sf::Event event;
+
+    while (mWindow.pollEvent(event))
+    {
+        if (event.type == sf::Event::Closed)
+            mWindow.close();
+    }
+}
+
+void Game::update()
+{
+}
+
+void Game::render()
+{
+    mWindow.clear();
+    mWindow.draw(mPlayer);
+    mWindow.display();
+}
+
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode(200, 200), "Crank Game");
-
-    sf::CircleShape ball;
-    ball.setRadius(100);
-    ball.setFillColor(sf::Color::Green);
-
-    while (window.isOpen())
-    {
-        sf::Event event;
-        while (window.pollEvent(event))
-        {
-            if (event.type == sf::Event::Closed)
-                window.close();
-        }
-
-        window.clear();
-        window.draw(ball);
-        window.display();
-    }
-
-    return 0;
+    Game game;
+    game.run();
 }
