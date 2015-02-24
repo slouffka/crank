@@ -19,7 +19,8 @@ class Game
         static const sf::Time   TimePerFrame;
 
         sf::RenderWindow        mWindow;
-        sf::CircleShape         mPlayer;
+        sf::Texture             mTexture;
+        sf::Sprite              mPlayer;
 
         bool                    mIsMovingUp;
         bool                    mIsMovingDown;
@@ -31,40 +32,34 @@ const float Game::PlayerSpeed = 250.f;
 const sf::Time Game::TimePerFrame = sf::seconds(1.f / 60.f);
 
 Game::Game()
-: mWindow(sf::VideoMode(640, 480), "Crank Game", sf::Style::Close)
+: mWindow(sf::VideoMode(800, 600), "Crank Game", sf::Style::Close)
+, mTexture()
 , mPlayer()
 , mIsMovingUp(false)
 , mIsMovingDown(false)
 , mIsMovingLeft(false)
 , mIsMovingRight(false)
 {
-    mPlayer.setRadius(40.f);
+    if (!mTexture.loadFromFile("assets/img/ship.png"))
+    {
+        std::cout << "Can't load ship texture" << std::endl;
+    }
+
+    mPlayer.setTexture(mTexture);
     mPlayer.setPosition(100.f, 100.f);
-    mPlayer.setFillColor(sf::Color::Cyan);
 }
 
 void Game::run()
 {
     sf::Clock clock;
-    sf::Time timeSinceLastUpdate = sf::Time::Zero;
+    sf::Time frameTime = sf::Time::Zero;
 
     while (mWindow.isOpen())
     {
-        timeSinceLastUpdate += clock.restart();
+        frameTime = clock.restart();
+
         processEvents();
-
-        std::cout << "timeSinceLastUpdate: " << timeSinceLastUpdate.asMilliseconds() << ". before" << std::endl;
-
-        while (timeSinceLastUpdate > TimePerFrame)
-        {
-            timeSinceLastUpdate -= TimePerFrame;
-
-            processEvents();
-            update(TimePerFrame);
-        }
-
-        std::cout << "timeSinceLastUpdate: " << timeSinceLastUpdate.asMilliseconds() << ". after" << std::endl;
-
+        update(frameTime);
         render();
     }
 }
