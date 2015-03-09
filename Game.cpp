@@ -1,5 +1,4 @@
 #include "Game.hpp"
-#include "ResourceManager.hpp"
 
 const float Game::PlayerSpeed = 400.f;
 const sf::Time Game::TimePerFrame = sf::seconds(1.f / 60.f);
@@ -7,7 +6,11 @@ const sf::Time Game::TimePerFrame = sf::seconds(1.f / 60.f);
 Game::Game()
 : mWindow(sf::VideoMode(800, 600), "Crank Game", sf::Style::Close)
 , mTextures()
+, mFonts()
 , mPlayer()
+, mStatsText()
+, mStatsUpdateTime()
+, mStatsNumFrames(0)
 , mIsMovingUp(false)
 , mIsMovingDown(false)
 , mIsMovingLeft(false)
@@ -22,6 +25,20 @@ Game::Game()
         std::cout << "Exception: " << e.what() << std::endl;
         return;
     }
+
+    try
+    {
+        mFonts.load(Fonts::Arcade, "res/fonts/arcade.ttf");
+    }
+    catch (std::runtime_error& e)
+    {
+        std::cout << "Exception: " << e.what() << std::endl;
+        return;
+    }
+
+    mStatsText.setFont(mFonts.get(Fonts::Arcade));
+    mStatsText.setPosition(10.f, 10.f);
+    mStatsText.setCharacterSize(14);
 
     mPlayer.setTexture(mTextures.get(Textures::Ship));
     mPlayer.setPosition(100.f, 100.f);
@@ -38,6 +55,7 @@ void Game::run()
 
         processEvents();
         update(frameTime);
+        updateStats(frameTime);
         render();
     }
 }
@@ -62,6 +80,23 @@ void Game::processEvents()
             default:
                 break;
         }
+    }
+}
+
+void Game::updateStats(sf::Time frameTime)
+{
+    mStatsUpdateTime += frameTime;
+    mStatsNumFrames += 1;
+
+    if (mStatsUpdateTime >= sf::seconds(1.0f))
+    {
+        mStatsText.setString(
+            "Frame / Seconds: " + toString(mStatsNumFrames) + "\n" +
+            "Time / Update: " + toString(mStatsUpdateTime.asMicroseconds() / mStatsNumFrames) + "us"
+        );
+
+        mStatsUpdateTime -= sf::seconds(1.0f);
+        mStatsNumFrames = 0;
     }
 }
 
@@ -102,5 +137,6 @@ void Game::render()
 {
     mWindow.clear();
     mWindow.draw(mPlayer);
+    mWindow.draw(mStatsText);
     mWindow.display();
 }
