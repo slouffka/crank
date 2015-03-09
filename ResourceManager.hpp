@@ -1,5 +1,5 @@
-#ifndef _RESOURCE_HOLDER_HPP_
-#define _RESOURCE_HOLDER_HPP_
+#ifndef CRANK_RESOURCE_MANAGER_HPP
+#define CRANK_RESOURCE_MANAGER_HPP
 
 #include <map>
 #include <string>
@@ -27,4 +27,4 @@ class ResourceManager
 };
 
 #include "ResourceManager.inl"
-#endif // _RESOURCE_HOLDER_HPP_
+#endif // CRANK_RESOURCE_MANAGER_HPP
