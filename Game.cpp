@@ -15,7 +15,7 @@ Game::Game()
 {
     try
     {
-        mTextures.load(Textures::Ship, "assets/img/ship.png");
+        mTextures.load(Textures::Ship, "res/img/ship.png");
     }
     catch (std::runtime_error& e)
     {
