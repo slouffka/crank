@@ -1,5 +1,15 @@
-#include <iostream>
+#include "ResourceManager.hpp"
 #include <SFML/Graphics.hpp>
+
+#include <iostream>
+
+namespace Textures
+{
+    enum ID
+    {
+        Ship
+    };
+}
 
 class Game
 {
@@ -19,7 +29,7 @@ class Game
         static const sf::Time   TimePerFrame;
 
         sf::RenderWindow        mWindow;
-        sf::Texture             mTexture;
+        ResourceManager<sf::Texture, Textures::ID> mTextures;
         sf::Sprite              mPlayer;
 
         bool                    mIsMovingUp;
@@ -28,24 +38,29 @@ class Game
         bool                    mIsMovingRight;
 };
 
-const float Game::PlayerSpeed = 250.f;
+const float Game::PlayerSpeed = 400.f;
 const sf::Time Game::TimePerFrame = sf::seconds(1.f / 60.f);
 
 Game::Game()
 : mWindow(sf::VideoMode(800, 600), "Crank Game", sf::Style::Close)
-, mTexture()
+, mTextures()
 , mPlayer()
 , mIsMovingUp(false)
 , mIsMovingDown(false)
 , mIsMovingLeft(false)
 , mIsMovingRight(false)
 {
-    if (!mTexture.loadFromFile("assets/img/ship.png"))
+    try
     {
-        std::cout << "Can't load ship texture" << std::endl;
+        mTextures.load(Textures::Ship, "assets/img/ship.png");
+    }
+    catch (std::runtime_error& e)
+    {
+        std::cout << "Exception: " << e.what() << std::endl;
+        return;
     }
 
-    mPlayer.setTexture(mTexture);
+    mPlayer.setTexture(mTextures.get(Textures::Ship));
     mPlayer.setPosition(100.f, 100.f);
 }
 
@@ -90,13 +105,13 @@ void Game::processEvents()
 void Game::handlePlayerInput(sf::Keyboard::Key key, bool isPressed)
 {
     // movement
-    if (key == sf::Keyboard::W)
+    if (key == sf::Keyboard::E)
         mIsMovingUp = isPressed;
-    if (key == sf::Keyboard::S)
-        mIsMovingDown = isPressed;
-    if (key == sf::Keyboard::A)
-        mIsMovingLeft = isPressed;
     if (key == sf::Keyboard::D)
+        mIsMovingDown = isPressed;
+    if (key == sf::Keyboard::S)
+        mIsMovingLeft = isPressed;
+    if (key == sf::Keyboard::F)
         mIsMovingRight = isPressed;
 
     // exit
