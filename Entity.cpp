@@ -15,3 +15,8 @@ sf::Vector2f Entity::getVelocity() const
 {
     return mVelocity;
 }
+
+void Entity::updateCurrent(sf::Time frameTime)
+{
+    move(mVelocity * frameTime.asSeconds());
+}

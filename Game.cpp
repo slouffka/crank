@@ -1,6 +1,6 @@
 #include "Game.hpp"
 
-const float Game::PlayerSpeed = 400.f;
+const float Game::PlayerSpeed = 800.f;
 const sf::Time Game::TimePerFrame = sf::seconds(1.f / 60.f);
 
 Game::Game()
@@ -91,8 +91,8 @@ void Game::updateStats(sf::Time frameTime)
     if (mStatsUpdateTime >= sf::seconds(1.0f))
     {
         mStatsText.setString(
-            "Frame / Seconds: " + toString(mStatsNumFrames) + "\n" +
-            "Time / Update: " + toString(mStatsUpdateTime.asMicroseconds() / mStatsNumFrames) + "us"
+            toString(mStatsNumFrames) + " fps\n" +
+            toString(mStatsUpdateTime.asMicroseconds() / mStatsNumFrames / 1000.0f) + " ms/frame"
         );
 
         mStatsUpdateTime -= sf::seconds(1.0f);
@@ -103,13 +103,13 @@ void Game::updateStats(sf::Time frameTime)
 void Game::handlePlayerInput(sf::Keyboard::Key key, bool isPressed)
 {
     // movement
-    if (key == sf::Keyboard::E)
+    if (key == sf::Keyboard::K)
         mIsMovingUp = isPressed;
-    if (key == sf::Keyboard::D)
+    if (key == sf::Keyboard::J)
         mIsMovingDown = isPressed;
-    if (key == sf::Keyboard::S)
+    if (key == sf::Keyboard::H)
         mIsMovingLeft = isPressed;
-    if (key == sf::Keyboard::F)
+    if (key == sf::Keyboard::L)
         mIsMovingRight = isPressed;
 
     // exit
