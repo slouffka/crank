@@ -9,13 +9,12 @@
 #include <vector>
 #include <memory>
 
-class SceneNode
-: public sf::Transformable
-, public sf::Drawable
-, private sf::NonCopyable
+
+class SceneNode : public sf::Transformable, public sf::Drawable, private sf::NonCopyable
 {
     public:
         typedef std::unique_ptr<SceneNode> Ptr;
+
 
     public:
                                 SceneNode();
@@ -28,6 +27,7 @@ class SceneNode
         sf::Vector2f            getWorldPosition() const;
         sf::Transform           getWorldTransform() const;
 
+
     private:
         virtual void            updateCurrent(sf::Time frameTime);
         void                    updateChildren(sf::Time frameTime);
@@ -36,10 +36,10 @@ class SceneNode
         virtual void            drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
         void                    drawChildren(sf::RenderTarget& target, sf::RenderStates states) const;
 
+
     private:
         std::vector<Ptr>        mChildren;
-        SceneNode               mParent;
-
+        SceneNode*              mParent;
 };
 
 #endif // CRANK_SCENE_NODE_HPP

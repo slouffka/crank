@@ -17,7 +17,7 @@ Textures::ID toTextureID(Ship::Type type)
     return Textures::Ship;
 }
 
-Aircraft::Aircraft(Type type, const TextureManager& textures)
+Ship::Ship(Type type, const TextureManager& textures)
 : mType(type)
 , mSprite(textures.get(toTextureID(type)))
 {
@@ -25,7 +25,7 @@ Aircraft::Aircraft(Type type, const TextureManager& textures)
     mSprite.setOrigin(bounds.width / 2.f, bounds.height / 2.f);
 }
 
-void Aircraft::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const
+void Ship::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const
 {
     target.draw(mSprite, states);
 }

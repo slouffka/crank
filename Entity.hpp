@@ -3,6 +3,7 @@
 
 #include "SceneNode.hpp"
 
+
 class Entity : public SceneNode
 {
     public:
@@ -10,8 +11,10 @@ class Entity : public SceneNode
         void                setVelocity(float vx, float vy);
         sf::Vector2f        getVelocity() const;
 
+
     private:
         virtual void        updateCurrent(sf::Time frameTime);
+
 
     private:
         sf::Vector2f        mVelocity;

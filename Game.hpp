@@ -1,61 +1,41 @@
 #ifndef CRANK_GAME_HPP
 #define CRANK_GAME_HPP
 
-#include <SFML/Graphics.hpp>
-#include <iostream>
+#include "World.hpp"
 
-#include "StringHelpers.hpp"
-#include "ResourceManager.hpp"
+#include <SFML/System/Time.hpp>
+#include <SFML/Window/Keyboard.hpp>
+#include <SFML/Graphics/Text.hpp>
+#include <SFML/Graphics/Font.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
 
 
-namespace Textures
-{
-    enum ID
-    {
-        Ship
-    };
-}
-
-namespace Fonts
-{
-    enum ID
-    {
-        Arcade
-    };
-}
-
-class Game
+class Game : private sf::NonCopyable
 {
     public:
                                 Game();
         void                    run();
+
 
     private:
         void                    processEvents();
         void                    update(sf::Time frameTime);
         void                    render();
 
+        void                    updateStatistics(sf::Time frameTime);
         void                    handlePlayerInput(sf::Keyboard::Key key, bool isPressed);
-        void                    updateStats(sf::Time frameTime);
+
 
     private:
-        static const float      PlayerSpeed;
         static const sf::Time   TimePerFrame;
 
-        ResourceManager<sf::Texture, Textures::ID> mTextures;
-        ResourceManager<sf::Font, Fonts::ID> mFonts;
-
         sf::RenderWindow        mWindow;
-        sf::Sprite              mPlayer;
+        World                   mWorld;
 
-        sf::Text                mStatsText;
-        sf::Time                mStatsUpdateTime;
-        std::size_t             mStatsNumFrames;
-
-        bool                    mIsMovingUp;
-        bool                    mIsMovingDown;
-        bool                    mIsMovingLeft;
-        bool                    mIsMovingRight;
+        FontManager             mFonts;
+        sf::Text                mStatisticsText;
+        sf::Time                mStatisticsUpdateTime;
+        std::size_t             mStatisticsNumFrames;
 };
 
 #endif // CRANK_GAME_HPP

@@ -5,13 +5,23 @@
 namespace sf
 {
     class Texture;
+    class Font;
 }
 
 namespace Textures
 {
     enum ID
     {
+        Background,
         Ship
+    };
+}
+
+namespace Fonts
+{
+    enum ID
+    {
+        Arcade
     };
 }
 
@@ -20,5 +30,6 @@ template <typename Resource, typename Identifier>
 class ResourceManager;
 
 typedef ResourceManager<sf::Texture, Textures::ID> TextureManager;
+typedef ResourceManager<sf::Font, Fonts::ID> FontManager;
 
 #endif // CRANK_RESOURCE_IDENTIFIERS_HPP
