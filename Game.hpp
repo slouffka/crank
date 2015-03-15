@@ -2,9 +2,9 @@
 #define CRANK_GAME_HPP
 
 #include "World.hpp"
+#include "Player.hpp"
 
 #include <SFML/System/Time.hpp>
-#include <SFML/Window/Keyboard.hpp>
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
@@ -18,12 +18,10 @@ class Game : private sf::NonCopyable
 
 
     private:
-        void                    processEvents();
+        void                    processInput();
         void                    update(sf::Time frameTime);
         void                    render();
-
         void                    updateStatistics(sf::Time frameTime);
-        void                    handlePlayerInput(sf::Keyboard::Key key, bool isPressed);
 
 
     private:
@@ -31,6 +29,7 @@ class Game : private sf::NonCopyable
 
         sf::RenderWindow        mWindow;
         World                   mWorld;
+        Player                  mPlayer;
 
         FontManager             mFonts;
         sf::Text                mStatisticsText;

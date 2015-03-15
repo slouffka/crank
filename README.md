@@ -37,5 +37,5 @@ out what the hell happened.
 
 # Useful links
 
-SFML City Building Game Tutorial (https://www.binpress.com/tutorial/creating-a-city-building-game-with-sfml/137)
-SFML Game Development Book Source Code (https://github.com/LaurentGomila/SFML-Game-Development-Book)
+* SFML City Building Game Tutorial (https://www.binpress.com/tutorial/creating-a-city-building-game-with-sfml/137)
+* SFML Game Development Book Source Code (https://github.com/LaurentGomila/SFML-Game-Development-Book)

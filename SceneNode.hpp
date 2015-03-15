@@ -1,5 +1,7 @@
-#ifndef CRANK_SCENE_NODE_HPP
-#define CRANK_SCENE_NODE_HPP
+#ifndef CRANK_SCENENODE_HPP
+#define CRANK_SCENENODE_HPP
+
+#include "Category.hpp"
 
 #include <SFML/System/NonCopyable.hpp>
 #include <SFML/System/Time.hpp>
@@ -9,6 +11,8 @@
 #include <vector>
 #include <memory>
 
+
+struct Command;
 
 class SceneNode : public sf::Transformable, public sf::Drawable, private sf::NonCopyable
 {
@@ -27,6 +31,9 @@ class SceneNode : public sf::Transformable, public sf::Drawable, private sf::Non
         sf::Vector2f            getWorldPosition() const;
         sf::Transform           getWorldTransform() const;
 
+        void                    onCommand(const Command& command, sf::Time frameTime);
+        virtual unsigned int    getCategory() const;
+
 
     private:
         virtual void            updateCurrent(sf::Time frameTime);
@@ -42,4 +49,4 @@ class SceneNode : public sf::Transformable, public sf::Drawable, private sf::Non
         SceneNode*              mParent;
 };
 
-#endif // CRANK_SCENE_NODE_HPP
+#endif // CRANK_SCENENODE_HPP

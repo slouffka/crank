@@ -2,6 +2,7 @@
 
 #include <SFML/Graphics/RenderWindow.hpp>
 
+
 World::World(sf::RenderWindow& window)
 : mWindow(window)
 , mWorldView(window.getDefaultView())
@@ -24,26 +25,26 @@ void World::update(sf::Time frameTime)
 {
     // Scroll the world
     mWorldView.move(0.f, mScrollSpeed * frameTime.asSeconds());
+    mPlayerShip->setVelocity(0.f, 0.f);
 
-    // Move the player sidewards (plane scouts follow the main ship)
-    sf::Vector2f position = mPlayerShip->getPosition();
-    sf::Vector2f velocity = mPlayerShip->getVelocity();
+    // Forward commands to scene graph, adapt velocity (scrolling, diagonal correction)
+    while (!mCommandQueue.isEmpty())
+        mSceneGraph.onCommand(mCommandQueue.pop(), frameTime);
+    adaptPlayerVelocity();
 
-    // If player touches borders, flip its X velocity
-    if (position.x <= mWorldBounds.left + 150.f || position.x >= mWorldBounds.left + mWorldBounds.width - 150.f)
-    {
-        velocity.x = -velocity.x;
-        mPlayerShip->setVelocity(velocity);
-    }
-
-    // Apply movements
     mSceneGraph.update(frameTime);
+    adaptPlayerPosition();
 }
 
 void World::draw()
 {
     mWindow.setView(mWorldView);
     mWindow.draw(mSceneGraph);
+}
+
+CommandQueue& World::getCommandQueue()
+{
+    return mCommandQueue;
 }
 
 void World::loadTextures()
@@ -77,15 +78,31 @@ void World::buildScene()
     std::unique_ptr<Ship> leader(new Ship(Ship::Eagle, mTextures));
     mPlayerShip = leader.get();
     mPlayerShip->setPosition(mSpawnPosition);
-    mPlayerShip->setVelocity(40.f, mScrollSpeed);
     mSceneLayers[Space]->attachChild(std::move(leader));
+}
 
-    // Add two escorting ships, placed relatively to main ship
-    std::unique_ptr<Ship> leftEscort(new Ship(Ship::Raptor, mTextures));
-    leftEscort->setPosition(-80.f, 50.f);
-    mPlayerShip->attachChild(std::move(leftEscort));
+void World::adaptPlayerPosition()
+{
+    // Keep player's positioin inside the screen bounds, at least borderDistance units from border
+    sf::FloatRect viewBounds(mWorldView.getCenter() - mWorldView.getSize() / 2.f, mWorldView.getSize());
+    const float borderDistance = 40.f;
 
-    std::unique_ptr<Ship> rightEscort(new Ship(Ship::Raptor, mTextures));
-    rightEscort->setPosition(80.f, 50.f);
-    mPlayerShip->attachChild(std::move(rightEscort));
+    sf::Vector2f position = mPlayerShip->getPosition();
+    position.x = std::max(position.x, viewBounds.left + borderDistance);
+    position.x = std::min(position.x, viewBounds.left + viewBounds.width - borderDistance);
+    position.y = std::max(position.y, viewBounds.top + borderDistance);
+    position.y = std::min(position.y, viewBounds.top + viewBounds.height - borderDistance);
+    mPlayerShip->setPosition(position);
+}
+
+void World::adaptPlayerVelocity()
+{
+    sf::Vector2f velocity = mPlayerShip->getVelocity();
+
+    // If moving diagonally, reduce velocity (to have always same velocity)
+    if (velocity.x != 0.f && velocity.y != 0.f)
+        mPlayerShip->setVelocity(velocity / std::sqrt(2.f));
+
+    // Add scrolling velocity
+    mPlayerShip->accelerate(0.f, mScrollSpeed);
 }

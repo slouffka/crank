@@ -7,13 +7,16 @@
 const sf::Time Game::TimePerFrame = sf::seconds(1.f / 60.f);
 
 Game::Game()
-: mWindow(sf::VideoMode(800, 600), "Crank Game", sf::Style::Close)
+: mWindow(sf::VideoMode(800, 600), "---=#_$ ^ *  crank ` . $_#=---", sf::Style::Close)
 , mWorld(mWindow)
+, mPlayer()
 , mFonts()
 , mStatisticsText()
 , mStatisticsUpdateTime()
 , mStatisticsNumFrames(0)
 {
+    mWindow.setKeyRepeatEnabled(false);
+
     mFonts.load(Fonts::Arcade, "res/fonts/arcade.ttf");
     mStatisticsText.setFont(mFonts.get(Fonts::Arcade));
     mStatisticsText.setPosition(10.f, 10.f);
@@ -24,21 +27,21 @@ void Game::run()
 {
     // floating time step, most smooth rendering but can't
     // guarantee repeated results for the same scene
-    sf::Clock clock;
+    /* sf::Clock clock;
     sf::Time frameTime = sf::Time::Zero;
 
     while (mWindow.isOpen())
     {
         frameTime = clock.restart();
 
-        processEvents();
+        processInput();
         update(frameTime);
         updateStatistics(frameTime);
         render();
-    }
+    } */
 
     // fixed time step, jagged rendering but accurate physics
-    /* sf::Clock clock;
+    sf::Clock clock;
     sf::Time frameTime = sf::Time::Zero;
     sf::Time timeSinceLastUpdate = sf::Time::Zero;
 
@@ -50,39 +53,30 @@ void Game::run()
         {
             timeSinceLastUpdate -= TimePerFrame;
 
-            processEvents();
+            processInput();
             update(TimePerFrame);
 
         }
 
-        updateStatistics(elapsedTime);
+        updateStatistics(frameTime);
         render();
-    } */
+    }
 }
 
-void Game::processEvents()
+void Game::processInput()
 {
+    CommandQueue& commands = mWorld.getCommandQueue();
+
     sf::Event event;
     while (mWindow.pollEvent(event))
     {
-        switch (event.type)
-        {
-            case sf::Event::KeyPressed:
-                handlePlayerInput(event.key.code, true);
-                break;
+        mPlayer.handleEvent(event, commands);
 
-            case sf::Event::KeyReleased:
-                handlePlayerInput(event.key.code, false);
-                break;
-
-            case sf::Event::Closed:
-                mWindow.close();
-                break;
-
-            default:
-                break;
-        }
+        if (event.type == sf::Event::Closed)
+            mWindow.close();
     }
+
+    mPlayer.handleRealtimeInput(commands);
 }
 
 void Game::update(sf::Time frameTime)
@@ -115,11 +109,4 @@ void Game::updateStatistics(sf::Time frameTime)
         mStatisticsUpdateTime -= sf::seconds(1.0f);
         mStatisticsNumFrames = 0;
     }
-}
-
-void Game::handlePlayerInput(sf::Keyboard::Key key, bool isPressed)
-{
-    // exit
-    if (key == sf::Keyboard::Escape && isPressed)
-        mWindow.close();
 }

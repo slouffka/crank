@@ -18,16 +18,17 @@ class Ship : public Entity
 
 
     public:
-                            Ship(Type type, const TextureManager& textures);
+                                Ship(Type type, const TextureManager& textures);
+        virtual unsigned int    getCategory() const;
 
 
     private:
-        virtual void        drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
+        virtual void            drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
 
 
     private:
-        Type                mType;
-        sf::Sprite          mSprite;
+        Type                    mType;
+        sf::Sprite              mSprite;
 };
 
 #endif // CRANK_SHIP_HPP
