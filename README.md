@@ -27,6 +27,8 @@ On the way:
 
 ! 11 Production     Make the finished & polished product.
 
+![Latest Screenshot](public/img/crank-world-15032015.png)
+
 # The Game
 
 Man found himself awaked in a spaceship floating through deep space. He do not
