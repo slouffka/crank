@@ -9,12 +9,12 @@ Textures::ID toTextureID(Ship::Type type)
     switch (type)
     {
         case Ship::Eagle:
-            return Textures::Ship;
+            return Textures::Eagle;
 
         case Ship::Raptor:
-            return Textures::Ship;
+            return Textures::Raptor;
     }
-    return Textures::Ship;
+    return Textures::Eagle;
 }
 
 Ship::Ship(Type type, const TextureManager& textures)

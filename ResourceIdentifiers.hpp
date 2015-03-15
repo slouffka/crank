@@ -13,7 +13,8 @@ namespace Textures
     enum ID
     {
         Background,
-        Ship
+        Eagle,
+        Raptor
     };
 }
 

@@ -13,6 +13,7 @@ World::World(sf::RenderWindow& window)
 , mSpawnPosition(mWorldView.getSize().x / 2.f, mWorldBounds.height - mWorldView.getSize().y / 2.f)
 , mScrollSpeed(-50.f)
 , mPlayerShip(nullptr)
+, mEnemyShip(nullptr)
 {
     loadTextures();
     buildScene();
@@ -34,6 +35,8 @@ void World::update(sf::Time frameTime)
 
     mSceneGraph.update(frameTime);
     adaptPlayerPosition();
+
+    mEnemyShip->setPosition(mPlayerShip->getPosition().x - 200.f, mPlayerShip->getPosition().y - 200.f);
 }
 
 void World::draw()
@@ -50,7 +53,8 @@ CommandQueue& World::getCommandQueue()
 void World::loadTextures()
 {
     mTextures.load(Textures::Background, "res/img/background.png");
-    mTextures.load(Textures::Ship, "res/img/ship.png");
+    mTextures.load(Textures::Eagle, "res/img/eagle.png");
+    mTextures.load(Textures::Raptor, "res/img/raptor.png");
 }
 
 void World::buildScene()
@@ -75,10 +79,16 @@ void World::buildScene()
     mSceneLayers[Background]->attachChild(std::move(backgroundSprite));
 
     // Add player's ship
-    std::unique_ptr<Ship> leader(new Ship(Ship::Eagle, mTextures));
-    mPlayerShip = leader.get();
+    std::unique_ptr<Ship> player(new Ship(Ship::Eagle, mTextures));
+    mPlayerShip = player.get();
     mPlayerShip->setPosition(mSpawnPosition);
-    mSceneLayers[Space]->attachChild(std::move(leader));
+    mSceneLayers[Space]->attachChild(std::move(player));
+
+    // Add enemy ship
+    std::unique_ptr<Ship> enemy(new Ship(Ship::Raptor, mTextures));
+    mEnemyShip = enemy.get();
+    mEnemyShip->setPosition(mSpawnPosition.x + 200.f, mSpawnPosition.y + 200.f);
+    mSceneLayers[Space]->attachChild(std::move(enemy));
 }
 
 void World::adaptPlayerPosition()

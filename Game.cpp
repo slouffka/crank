@@ -27,7 +27,7 @@ void Game::run()
 {
     // floating time step, most smooth rendering but can't
     // guarantee repeated results for the same scene
-    /* sf::Clock clock;
+    sf::Clock clock;
     sf::Time frameTime = sf::Time::Zero;
 
     while (mWindow.isOpen())
@@ -38,10 +38,10 @@ void Game::run()
         update(frameTime);
         updateStatistics(frameTime);
         render();
-    } */
+    }
 
     // fixed time step, jagged rendering but accurate physics
-    sf::Clock clock;
+    /* sf::Clock clock;
     sf::Time frameTime = sf::Time::Zero;
     sf::Time timeSinceLastUpdate = sf::Time::Zero;
 
@@ -60,7 +60,7 @@ void Game::run()
 
         updateStatistics(frameTime);
         render();
-    }
+    } */
 }
 
 void Game::processInput()
