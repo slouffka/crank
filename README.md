@@ -16,16 +16,16 @@ Book & Game progress:
 
 On the way:
 
-! 04 Input:         Commands, Events, Realtime Input.
-! 05 States:        StateManager, State switching etc.
-! 06 Menus:         Base Gui, MenuState, Options, Setting, Control bindings.
+* 04 Input:         Commands, Events, Realtime Input.
+* 05 States:        StateManager, State switching etc.
+* 06 Menus:         Base Gui, MenuState, Options, Setting, Control bindings.
 
-! 07 Gameplay:      To be reviewed.
-! 08 Graphics:      To be reviewed.
-! 09 Audio:         To be reviewed.
-! 10 Network:       To be reviewed.
+* 07 Gameplay:      To be reviewed.
+* 08 Graphics:      To be reviewed.
+* 09 Audio:         To be reviewed.
+* 10 Network:       To be reviewed.
 
-! 11 Production     Make the finished & polished product.
+* 11 Production     Make the finished & polished product.
 
 ![Latest Screenshot](public/img/crank-world-15032015.png)
 
@@ -37,4 +37,5 @@ out what the hell happened.
 
 # Useful links
 
-![City Building Game Tutorial](https://www.binpress.com/tutorial/creating-a-city-building-game-with-sfml/137)
+SFML City Building Game Tutorial (https://www.binpress.com/tutorial/creating-a-city-building-game-with-sfml/137)
+SFML Game Development Book Source Code (https://github.com/LaurentGomila/SFML-Game-Development-Book)
