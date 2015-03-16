@@ -1,9 +1,9 @@
 Crank
 =====
 
-This game is a process of mastering C++ game development. I use an SFML library
+This game is a process of mastering C++ game development. I use SFML library
 to simplify development. Writing this while reading a book SFML Game Development.
-So most of the code mimics the book samples but is adopting to my own needs as
+So most of the code mimics the book samples but is adopted to my own needs as
 I progress through the book chapters.
 
 ![Latest Screenshot](public/img/crank-world-15032015.png)
@@ -27,9 +27,9 @@ On the way:
 
 # The Game
 
-Man found himself awaked in a spaceship floating through deep space. He do not
-remember anything before that moment. So you as a player must help him to find
-out what the hell happened.
+A man found himself awaked in a spaceship floating through deep space. He does not
+remember anything before that moment. So you as a player should help him to find
+out what the hell has happened.
 
 # Useful links
 
