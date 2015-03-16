@@ -7,7 +7,7 @@
 const sf::Time Game::TimePerFrame = sf::seconds(1.f / 60.f);
 
 Game::Game()
-: mWindow(sf::VideoMode(800, 600), "---=#_$ ^ *  crank ` . $_#=---", sf::Style::Close)
+: mWindow(sf::VideoMode(800, 600), "Crank", sf::Style::Close)
 , mWorld(mWindow)
 , mPlayer()
 , mFonts()
