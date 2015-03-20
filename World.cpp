@@ -25,7 +25,7 @@ World::World(sf::RenderWindow& window)
 void World::update(sf::Time frameTime)
 {
     // Scroll the world
-    mWorldView.move(0.f, mScrollSpeed * frameTime.asSeconds());
+    // mWorldView.move(0.f, mScrollSpeed * frameTime.asSeconds());
     mPlayerShip->setVelocity(0.f, 0.f);
 
     // Forward commands to scene graph, adapt velocity (scrolling, diagonal correction)
@@ -36,7 +36,7 @@ void World::update(sf::Time frameTime)
     mSceneGraph.update(frameTime);
     adaptPlayerPosition();
 
-    mEnemyShip->setPosition(mPlayerShip->getPosition().x - 200.f, mPlayerShip->getPosition().y - 200.f);
+    // mEnemyShip->setPosition(mPlayerShip->getPosition().x - 200.f, mPlayerShip->getPosition().y - 200.f);
 }
 
 void World::draw()
