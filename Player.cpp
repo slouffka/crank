@@ -30,7 +30,6 @@ Player::Player()
     mKeyBinding[sf::Keyboard::Right] = MoveRight;
     mKeyBinding[sf::Keyboard::Up] = MoveUp;
     mKeyBinding[sf::Keyboard::Down] = MoveDown;
-    // mKeyBinding[sf::Keyboard::Escape] = Escape;
 
     // Set initial action bindings
     initializeActions();
@@ -96,7 +95,6 @@ void Player::initializeActions()
     mActionBinding[MoveRight].action = derivedAction<Ship>(ShipMover(+playerSpeed, 0.f));
     mActionBinding[MoveUp].action = derivedAction<Ship>(ShipMover(0.f, -playerSpeed));
     mActionBinding[MoveDown].action = derivedAction<Ship>(ShipMover(0.f, +playerSpeed));
-    // mActionBinding[Escape].action = derivedAction<Ship>(ShipMover(0.f, +playerSpeed));
 }
 
 bool Player::isRealtimeAction(Action action)
@@ -107,7 +105,6 @@ bool Player::isRealtimeAction(Action action)
         case MoveRight:
         case MoveUp:
         case MoveDown:
-        // case Escape:
             return true;
         default:
             return false;

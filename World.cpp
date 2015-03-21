@@ -2,6 +2,9 @@
 
 #include <SFML/Graphics/RenderWindow.hpp>
 
+#include <algorithm>
+#include <cmath>
+
 
 World::World(sf::RenderWindow& window)
 : mWindow(window)
@@ -13,7 +16,6 @@ World::World(sf::RenderWindow& window)
 , mSpawnPosition(mWorldView.getSize().x / 2.f, mWorldBounds.height - mWorldView.getSize().y / 2.f)
 , mScrollSpeed(-50.f)
 , mPlayerShip(nullptr)
-, mEnemyShip(nullptr)
 {
     loadTextures();
     buildScene();
@@ -25,7 +27,7 @@ World::World(sf::RenderWindow& window)
 void World::update(sf::Time frameTime)
 {
     // Scroll the world
-    // mWorldView.move(0.f, mScrollSpeed * frameTime.asSeconds());
+    mWorldView.move(0.f, mScrollSpeed * frameTime.asSeconds());
     mPlayerShip->setVelocity(0.f, 0.f);
 
     // Forward commands to scene graph, adapt velocity (scrolling, diagonal correction)
@@ -35,8 +37,6 @@ void World::update(sf::Time frameTime)
 
     mSceneGraph.update(frameTime);
     adaptPlayerPosition();
-
-    // mEnemyShip->setPosition(mPlayerShip->getPosition().x - 200.f, mPlayerShip->getPosition().y - 200.f);
 }
 
 void World::draw()
@@ -52,9 +52,9 @@ CommandQueue& World::getCommandQueue()
 
 void World::loadTextures()
 {
-    mTextures.load(Textures::Background, "res/img/background.png");
-    mTextures.load(Textures::Eagle, "res/img/eagle.png");
-    mTextures.load(Textures::Raptor, "res/img/raptor.png");
+    mTextures.load(Textures::Eagle, "res/textures/eagle.png");
+    mTextures.load(Textures::Raptor, "res/textures/raptor.png");
+    mTextures.load(Textures::Background, "res/textures/background.png");
 }
 
 void World::buildScene()
@@ -83,12 +83,6 @@ void World::buildScene()
     mPlayerShip = player.get();
     mPlayerShip->setPosition(mSpawnPosition);
     mSceneLayers[Space]->attachChild(std::move(player));
-
-    // Add enemy ship
-    std::unique_ptr<Ship> enemy(new Ship(Ship::Raptor, mTextures));
-    mEnemyShip = enemy.get();
-    mEnemyShip->setPosition(mSpawnPosition.x + 200.f, mSpawnPosition.y + 200.f);
-    mSceneLayers[Space]->attachChild(std::move(enemy));
 }
 
 void World::adaptPlayerPosition()

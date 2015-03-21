@@ -1,19 +1,20 @@
-#ifndef CRANK_GAME_HPP
-#define CRANK_GAME_HPP
+#ifndef CRANK_APPLICATION_HPP
+#define CRANK_APPLICATION_HPP
 
-#include "World.hpp"
+#include "ResourceManager.hpp"
+#include "ResourceIdentifiers.hpp"
 #include "Player.hpp"
+#include "StateStack.hpp"
 
-#include <SFML/System/Time.hpp>
-#include <SFML/Graphics/Text.hpp>
-#include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Graphics/Text.hpp>
+#include <SFML/System/Time.hpp>
 
 
-class Game : private sf::NonCopyable
+class Application
 {
     public:
-                                Game();
+                                Application();
         void                    run();
 
 
@@ -21,20 +22,24 @@ class Game : private sf::NonCopyable
         void                    processInput();
         void                    update(sf::Time frameTime);
         void                    render();
+
         void                    updateStatistics(sf::Time frameTime);
+        void                    registerStates();
 
 
     private:
         static const sf::Time   TimePerFrame;
 
         sf::RenderWindow        mWindow;
-        World                   mWorld;
+        TextureManager          mTextures;
+        FontManager             mFonts;
         Player                  mPlayer;
 
-        FontManager             mFonts;
+        StateStack              mStateStack;
+
         sf::Text                mStatisticsText;
         sf::Time                mStatisticsUpdateTime;
         std::size_t             mStatisticsNumFrames;
 };
 
-#endif // CRANK_GAME_HPP
+#endif // CRANK_APPLICATION_HPP

@@ -14,7 +14,8 @@ namespace Textures
     {
         Background,
         Eagle,
-        Raptor
+        Raptor,
+        TitleScreen
     };
 }
 
@@ -22,7 +23,7 @@ namespace Fonts
 {
     enum ID
     {
-        Arcade
+        Main
     };
 }
 

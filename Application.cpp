@@ -1,33 +1,43 @@
-#include "Game.hpp"
-#include "StringHelpers.hpp"
+#include "Application.hpp"
+#include "Utility.hpp"
+#include "State.hpp"
+#include "StateIdentifiers.hpp"
+#include "TitleState.hpp"
+#include "GameState.hpp"
+#include "MenuState.hpp"
+#include "PauseState.hpp"
 
-#include <SFML/Window/Event.hpp>
 
+const sf::Time Application::TimePerFrame = sf::seconds(1.f / 60.f);
 
-const sf::Time Game::TimePerFrame = sf::seconds(1.f / 60.f);
-
-Game::Game()
-: mWindow(sf::VideoMode(800, 600), "Crank", sf::Style::Close)
-, mWorld(mWindow)
-, mPlayer()
+Application::Application()
+: mWindow(sf::VideoMode(800, 600), "Crank 05-States", sf::Style::Close)
+, mTextures()
 , mFonts()
+, mPlayer()
+, mStateStack(State::Context(mWindow, mTextures, mFonts, mPlayer))
 , mStatisticsText()
 , mStatisticsUpdateTime()
 , mStatisticsNumFrames(0)
 {
     mWindow.setKeyRepeatEnabled(false);
 
-    mFonts.load(Fonts::Arcade, "res/fonts/arcade.ttf");
-    mStatisticsText.setFont(mFonts.get(Fonts::Arcade));
+    mFonts.load(Fonts::Main, "res/fonts/arcade.ttf");
+    mTextures.load(Textures::TitleScreen, "res/textures/title-screen.png");
+
+    mStatisticsText.setFont(mFonts.get(Fonts::Main));
     mStatisticsText.setPosition(10.f, 10.f);
-    mStatisticsText.setCharacterSize(14);
+    mStatisticsText.setCharacterSize(14u);
+
+    registerStates();
+    mStateStack.pushState(States::Title);
 }
 
-void Game::run()
+void Application::run()
 {
     // floating time step, most smooth rendering but can't
     // guarantee repeated results for the same scene
-    sf::Clock clock;
+    /* sf::Clock clock;
     sf::Time frameTime = sf::Time::Zero;
 
     while (mWindow.isOpen())
@@ -38,16 +48,15 @@ void Game::run()
         update(frameTime);
         updateStatistics(frameTime);
         render();
-    }
+    } */
 
     // fixed time step, jagged rendering but accurate physics
-    /* sf::Clock clock;
-    sf::Time frameTime = sf::Time::Zero;
+    sf::Clock clock;
     sf::Time timeSinceLastUpdate = sf::Time::Zero;
 
     while (mWindow.isOpen())
     {
-        frameTime = clock.restart();
+        sf::Time frameTime = clock.restart();
         timeSinceLastUpdate += frameTime;
         while (timeSinceLastUpdate > TimePerFrame)
         {
@@ -56,45 +65,45 @@ void Game::run()
             processInput();
             update(TimePerFrame);
 
+            if (mStateStack.isEmpty())
+                mWindow.close();
         }
 
         updateStatistics(frameTime);
         render();
-    } */
+    }
 }
 
-void Game::processInput()
+void Application::processInput()
 {
-    CommandQueue& commands = mWorld.getCommandQueue();
-
     sf::Event event;
     while (mWindow.pollEvent(event))
     {
-        mPlayer.handleEvent(event, commands);
+        mStateStack.handleEvent(event);
 
         if (event.type == sf::Event::Closed)
             mWindow.close();
     }
-
-    mPlayer.handleRealtimeInput(commands);
 }
 
-void Game::update(sf::Time frameTime)
+void Application::update(sf::Time frameTime)
 {
-    mWorld.update(frameTime);
+    mStateStack.update(frameTime);
 }
 
-void Game::render()
+void Application::render()
 {
     mWindow.clear();
-    mWorld.draw();
+
+    mStateStack.draw();
 
     mWindow.setView(mWindow.getDefaultView());
     mWindow.draw(mStatisticsText);
+
     mWindow.display();
 }
 
-void Game::updateStatistics(sf::Time frameTime)
+void Application::updateStatistics(sf::Time frameTime)
 {
     mStatisticsUpdateTime += frameTime;
     mStatisticsNumFrames += 1;
@@ -109,4 +118,12 @@ void Game::updateStatistics(sf::Time frameTime)
         mStatisticsUpdateTime -= sf::seconds(1.0f);
         mStatisticsNumFrames = 0;
     }
+}
+
+void Application::registerStates()
+{
+    mStateStack.registerState<TitleState>(States::Title);
+    mStateStack.registerState<MenuState>(States::Menu);
+    mStateStack.registerState<GameState>(States::Game);
+    mStateStack.registerState<PauseState>(States::Pause);
 }

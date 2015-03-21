@@ -62,7 +62,6 @@ class World : private sf::NonCopyable
         sf::Vector2f                            mSpawnPosition;
         float                                   mScrollSpeed;
         Ship*                                   mPlayerShip;
-        Ship*                                   mEnemyShip;
 };
 
 #endif // CRANK_WORLD_HPP
