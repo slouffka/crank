@@ -72,7 +72,7 @@ void Player::assignKey(Action action, sf::Keyboard::Key key)
             ++itr;
     }
 
-    // Insert new bingind
+    // Insert new binding
     mKeyBinding[key] = action;
 }
 
