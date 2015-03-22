@@ -1,4 +1,4 @@
-clang++ -std=c++0x -O3 -lsfml-window -lsfml-graphics -lsfml-system -o crank \
+clang++ -std=c++11 -O3 -lsfml-window -lsfml-graphics -lsfml-system -o crank \
     Utility.cpp         \
     ParallelTask.cpp    \
     Entity.cpp          \
