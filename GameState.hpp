@@ -12,7 +12,7 @@
 class GameState : public State
 {
     public:
-        GameState(StateStack& stack, Context context);
+                            GameState(StateStack& stack, Context context);
 
         virtual void        draw();
         virtual bool        update(sf::Time frameTime);
