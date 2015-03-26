@@ -1,5 +1,5 @@
-#ifndef CRANK_RESOURCE_IDENTIFIERS_HPP
-#define CRANK_RESOURCE_IDENTIFIERS_HPP
+#ifndef CRANK_RESOURCEIDENTIFIERS_HPP
+#define CRANK_RESOURCEIDENTIFIERS_HPP
 
 // Forward declaration of SFML classes
 namespace sf
@@ -15,7 +15,10 @@ namespace Textures
         Background,
         Eagle,
         Raptor,
-        TitleScreen
+        TitleScreen,
+        ButtonNormal,
+        ButtonSelected,
+        ButtonPressed
     };
 }
 
@@ -34,4 +37,4 @@ class ResourceManager;
 typedef ResourceManager<sf::Texture, Textures::ID> TextureManager;
 typedef ResourceManager<sf::Font, Fonts::ID> FontManager;
 
-#endif // CRANK_RESOURCE_IDENTIFIERS_HPP
+#endif // CRANK_RESOURCEIDENTIFIERS_HPP

@@ -26,6 +26,7 @@ void StateStack::update(sf::Time frameTime)
 
 void StateStack::draw()
 {
+    // Draw all active states from bottom to top
     FOREACH(State::Ptr& state, mStack)
         state->draw();
 }

@@ -6,12 +6,13 @@
 #include "GameState.hpp"
 #include "MenuState.hpp"
 #include "PauseState.hpp"
+#include "SettingsState.hpp"
 
 
 const sf::Time Application::TimePerFrame = sf::seconds(1.f / 60.f);
 
 Application::Application()
-: mWindow(sf::VideoMode(800, 600), "Crank 05-States", sf::Style::Close)
+: mWindow(sf::VideoMode(800, 600), "Crank 06-Menus", sf::Style::Close)
 , mTextures()
 , mFonts()
 , mPlayer()
@@ -23,7 +24,11 @@ Application::Application()
     mWindow.setKeyRepeatEnabled(false);
 
     mFonts.load(Fonts::Main, "res/fonts/arcade.ttf");
+
     mTextures.load(Textures::TitleScreen, "res/textures/title-screen.png");
+    mTextures.load(Textures::ButtonNormal, "res/textures/button-normal.png");
+    mTextures.load(Textures::ButtonSelected, "res/textures/button-selected.png");
+    mTextures.load(Textures::ButtonPressed, "res/textures/button-pressed.png");
 
     mStatisticsText.setFont(mFonts.get(Fonts::Main));
     mStatisticsText.setPosition(10.f, 10.f);
@@ -37,7 +42,7 @@ void Application::run()
 {
     // floating time step, most smooth rendering but can't
     // guarantee repeated results for the same scene
-    sf::Clock clock;
+    /* sf::Clock clock;
     sf::Time frameTime = sf::Time::Zero;
 
     while (mWindow.isOpen())
@@ -48,10 +53,10 @@ void Application::run()
         update(frameTime);
         updateStatistics(frameTime);
         render();
-    }
+    } */
 
     // fixed time step, jagged rendering but accurate physics
-    /* sf::Clock clock;
+    sf::Clock clock;
     sf::Time timeSinceLastUpdate = sf::Time::Zero;
 
     while (mWindow.isOpen())
@@ -65,13 +70,14 @@ void Application::run()
             processInput();
             update(TimePerFrame);
 
+            // Check inside this loop, because stack might be empty before update() call
             if (mStateStack.isEmpty())
                 mWindow.close();
         }
 
         updateStatistics(frameTime);
         render();
-    } */
+    }
 }
 
 void Application::processInput()
@@ -107,13 +113,9 @@ void Application::updateStatistics(sf::Time frameTime)
 {
     mStatisticsUpdateTime += frameTime;
     mStatisticsNumFrames += 1;
-
     if (mStatisticsUpdateTime >= sf::seconds(1.0f))
     {
-        mStatisticsText.setString(
-            toString(mStatisticsNumFrames) + " fps\n" +
-            toString(mStatisticsUpdateTime.asMicroseconds() / mStatisticsNumFrames / 1000.0f) + " ms/frame"
-        );
+        mStatisticsText.setString(toString(mStatisticsNumFrames) + " fps");
 
         mStatisticsUpdateTime -= sf::seconds(1.0f);
         mStatisticsNumFrames = 0;
@@ -126,4 +128,5 @@ void Application::registerStates()
     mStateStack.registerState<MenuState>(States::Menu);
     mStateStack.registerState<GameState>(States::Game);
     mStateStack.registerState<PauseState>(States::Pause);
+    mStateStack.registerState<SettingsState>(States::Settings);
 }

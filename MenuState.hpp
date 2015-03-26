@@ -2,6 +2,7 @@
 #define CRANK_MENUSTATE_HPP
 
 #include "State.hpp"
+#include "Container.hpp"
 
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Text.hpp>
@@ -10,28 +11,16 @@
 class MenuState : public State
 {
     public:
-        MenuState(StateStack& stack, Context context);
+                                MenuState(StateStack& stack, Context context);
 
         virtual void            draw();
         virtual bool            update(sf::Time frameTime);
         virtual bool            handleEvent(const sf::Event& event);
 
-        void                    updateOptionText();
-
-
-    private:
-        enum OptionNames
-        {
-            Play,
-            Exit
-        };
-
 
     private:
         sf::Sprite              mBackgroundSprite;
-
-        std::vector<sf::Text>   mOptions;
-        std::size_t             mOptionIndex;
+        GUI::Container          mGUIContainer;
 };
 
 #endif // CRANK_MENUSTATE_HPP
