@@ -6,7 +6,7 @@ to simplify development. Writing this while reading a book SFML Game Development
 So most of the code mimics the book samples but is adopted to my own needs as
 I progress through the book chapters.
 
-![Latest Screenshot](public/img/crank-states-22032015.png)
+![Latest Screenshot](public/img/crank-menus-27032015.png)
 
 Book & Game progress:
 
@@ -15,10 +15,10 @@ Book & Game progress:
 * 03 World:         Scene management, SceneGraph, Entities, Sprites.
 * 04 Input:         Commands, Events, Realtime Input.
 * 05 States:        Game States, State Management etc.
+* 06 Menus:         Base Gui, MenuState, Settings, Control bindings.
 
 On the way:
 
-* 06 Menus:         Base Gui, MenuState, Options, Setting, Control bindings.
 * 07 Gameplay:      To be reviewed.
 * 08 Graphics:      To be reviewed.
 * 09 Audio:         To be reviewed.
