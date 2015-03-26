@@ -1,10 +1,9 @@
 Crank
 =====
 
-This game is a process of mastering C++ game development. I use SFML library
-to simplify development. Writing this while reading a book SFML Game Development.
-So most of the code mimics the book samples but is adopted to my own needs as
-I progress through the book chapters.
+I am writing this game while learning C++ gamedev using a book “SFML Game Development”.
+So most of the code mimics the book samples but is adopted to my own needs as I progress
+through the book chapters.
 
 ![Latest Screenshot](public/img/crank-menus-27032015.png)
 
@@ -33,5 +32,5 @@ out what the hell has happened.
 
 # Useful links
 
-* SFML City Building Game Tutorial (https://www.binpress.com/tutorial/creating-a-city-building-game-with-sfml/137)
 * SFML Game Development Book Source Code (https://github.com/LaurentGomila/SFML-Game-Development-Book)
+* SFML City Building Game Tutorial (https://www.binpress.com/tutorial/creating-a-city-building-game-with-sfml/137)
