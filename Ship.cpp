@@ -1,8 +1,14 @@
 #include "Ship.hpp"
+#include "ShipData.hpp"
 #include "ResourceManager.hpp"
 
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/RenderStates.hpp>
+
+namespace
+{
+    const std::vector<ShipData> Table = initializeShipData();
+}
 
 Textures::ID toTextureID(Ship::Type type)
 {

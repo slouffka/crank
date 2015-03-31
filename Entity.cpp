@@ -1,5 +1,17 @@
 #include "Entity.hpp"
 
+Entity::Entity(int hitpoints)
+: mHitpoints(hitpoints)
+{
+}
+
+void repair(int hitpoints)
+{
+    if (mHitpoints + hitpoints <= MAX_HITPOINTS)
+        mHitpoints += hitpoints;
+    else
+        mHitpoints = MAX_HITPOINTS;
+}
 
 void Entity::setVelocity(sf::Vector2f velocity)
 {
