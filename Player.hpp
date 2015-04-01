@@ -19,17 +19,30 @@ class Player
             MoveRight,
             MoveUp,
             MoveDown,
+            Fire,
+            LaunchMissile,
             ActionCount
+        };
+
+        enum MissionStatus
+        {
+            MissionRunning,
+            MissionSuccess,
+            MissionFailure
         };
 
 
     public:
                                 Player();
+
         void                    handleEvent(const sf::Event& event, CommandQueue& commands);
         void                    handleRealtimeInput(CommandQueue& commands);
 
         void                    assignKey(Action action, sf::Keyboard::Key key);
         sf::Keyboard::Key       getAssignedKey(Action action) const;
+
+        void                    setMissionStatus(MissionStatus status);
+        MissionStatus           getMissionStatus() const;
 
 
     private:
@@ -40,6 +53,7 @@ class Player
     private:
         std::map<sf::Keyboard::Key, Action>     mKeyBinding;
         std::map<Action, Command>               mActionBinding;
+        MissionStatus                           mCurrentMissionStatus;
 };
 
 #endif // CRANK_PLAYER_HPP

@@ -20,7 +20,7 @@ class Projectile : public Entity
 
 
     public:
-        Projectile(Type type, const TextureManager& textures);
+                                Projectile(Type type, const TextureManager& textures);
 
         void                    guideTowards(sf::Vector2f position);
         bool                    isGuided() const;

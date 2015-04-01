@@ -9,27 +9,26 @@ class Entity : public SceneNode
     public:
         explicit            Entity(int hitpoints);
 
-        void                rapair(int points);
-        void                damage(int points);
-        void                destroy();
-
-        int                 getHitpoints() const;
-        int                 isDestroyed() const;
-
         void                setVelocity(sf::Vector2f velocity);
         void                setVelocity(float vx, float vy);
         void                accelerate(sf::Vector2f velocity);
         void                accelerate(float vx, float vy);
         sf::Vector2f        getVelocity() const;
 
+        int                 getHitpoints() const;
+        void                rapair(int points);
+        void                damage(int points);
+        void                destroy();
+        virtual bool        isDestroyed() const;
+
+
+    protected:
+        virtual void        updateCurrent(sf::Time frameTime, CommandQueue& commands);
+
 
     private:
-        virtual void        updateCurrent(sf::Time frameTime);
-
-
-    private:
-        int                 mHitpoints;
         sf::Vector2f        mVelocity;
+        int                 mHitpoints;
 };
 
 #endif // CRANK_ENTITY_HPP

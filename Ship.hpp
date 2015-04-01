@@ -23,7 +23,7 @@ class Ship : public Entity
 
 
     public:
-                                Ship(Type type, const TextureManager& textures);
+                                Ship(Type type, const TextureManager& textures, FontManager& fonts);
 
         virtual unsigned int    getCategory() const;
         virtual sf::FloatRect   getBoundingRect() const;
@@ -46,7 +46,7 @@ class Ship : public Entity
         void                    checkPickupDrop(CommandQueue& commands);
         void                    checkProjectileLaunch(sf::Time frameTime, CommandQueue& commands);
 
-        void                    craateBullets(SceneNode& node, const TextureManager& textures) const;
+        void                    createBullets(SceneNode& node, const TextureManager& textures) const;
         void                    createProjectile(SceneNode& node, Projectile::Type type, float xOffset, float yOffset, const TextureManager& textures) const;
         void                    createPickup(SceneNode& node, const TextureManager& textures) const;
 
