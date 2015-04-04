@@ -1,14 +1,19 @@
 #include "World.hpp"
-
+#include "Projectile.hpp"
+#include "Pickup.hpp"
+#include "Foreach.hpp"
+#include "TextNode.hpp"
 #include <SFML/Graphics/RenderWindow.hpp>
 
 #include <algorithm>
 #include <cmath>
+#include <limits>
 
 
-World::World(sf::RenderWindow& window)
+World::World(sf::RenderWindow& window, FontManager& fonts)
 : mWindow(window)
 , mWorldView(window.getDefaultView())
+, mFonts(fonts)
 , mTextures()
 , mSceneGraph()
 , mSceneLayers()
@@ -16,6 +21,8 @@ World::World(sf::RenderWindow& window)
 , mSpawnPosition(mWorldView.getSize().x / 2.f, mWorldBounds.height - mWorldView.getSize().y / 2.f)
 , mScrollSpeed(-50.f)
 , mPlayerShip(nullptr)
+, mEnemySpawnPoints()
+, mActiveEnemies()
 {
     loadTextures();
     buildScene();
@@ -30,12 +37,24 @@ void World::update(sf::Time frameTime)
     mWorldView.move(0.f, mScrollSpeed * frameTime.asSeconds());
     mPlayerShip->setVelocity(0.f, 0.f);
 
+    // Setup commands to destroy entities, and guide missiles
+    destroyEntitiesOutsideView();
+    guideMissiles();
+
     // Forward commands to scene graph, adapt velocity (scrolling, diagonal correction)
     while (!mCommandQueue.isEmpty())
         mSceneGraph.onCommand(mCommandQueue.pop(), frameTime);
     adaptPlayerVelocity();
 
-    mSceneGraph.update(frameTime);
+    // Collision detection and response (may destroy entities)
+    handleCollisions();
+
+    // Remove all destroyed entities, create new ones
+    mSceneGraph.removeWrecks();
+    spawnEnemies();
+
+    // Regular update step, adapt position (correct if outside view)
+    mSceneGraph.update(frameTime, mCommandQueue);
     adaptPlayerPosition();
 }
 
@@ -50,10 +69,21 @@ CommandQueue& World::getCommandQueue()
     return mCommandQueue;
 }
 
+bool World::hasAlivePlayer() const
+{
+    return !mPlayerShip->isMarkedForRemoval();
+}
+
+bool World::hasPlayerReachedEnd() const
+{
+    return !mWorldBounds.contains(mPlayerShip->getPosition());
+}
+
 void World::loadTextures()
 {
     mTextures.load(Textures::Eagle, "res/textures/eagle.png");
     mTextures.load(Textures::Raptor, "res/textures/raptor.png");
+    mTextures.load(Textures::Avenger, "res/textures/avenger.png");
     mTextures.load(Textures::Background, "res/textures/background.png");
 }
 

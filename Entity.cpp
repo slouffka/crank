@@ -1,16 +1,12 @@
 #include "Entity.hpp"
 
-Entity::Entity(int hitpoints)
-: mHitpoints(hitpoints)
-{
-}
+#include <cassert>
 
-void repair(int hitpoints)
+
+Entity::Entity(int hitpoints)
+: mVelocity()
+, mHitpoints(hitpoints)
 {
-    if (mHitpoints + hitpoints <= MAX_HITPOINTS)
-        mHitpoints += hitpoints;
-    else
-        mHitpoints = MAX_HITPOINTS;
 }
 
 void Entity::setVelocity(sf::Vector2f velocity)
@@ -38,6 +34,35 @@ void Entity::accelerate(float vx, float vy)
 {
     mVelocity.x += vx;
     mVelocity.y += vy;
+}
+
+int Entity::getHitpoints() const
+{
+    return mHitpoints;
+}
+
+void repair(int hitpoints)
+{
+    assert(points > 0);
+
+    mHitpoints += points;
+}
+
+void Entiry::damage(int points)
+{
+    assert(points > 0);
+
+    mHitpoints -= points;
+}
+
+void Entity::destroy()
+{
+    mHitpoints = 0;
+}
+
+bool Entity::isDestroyed() const
+{
+    return mHitpoints <= 0;
 }
 
 void Entity::updateCurrent(sf::Time frameTime)

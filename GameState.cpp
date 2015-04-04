@@ -6,6 +6,7 @@ GameState::GameState(StateStack& stack, Context context)
 , mWorld(*context.window)
 , mPlayer(*context.player)
 {
+    mPlayer.setMissionStatus(Player::MissionRunning);
 }
 
 void GameState::draw()
@@ -16,6 +17,17 @@ void GameState::draw()
 bool GameState::update(sf::Time frameTime)
 {
     mWorld.update(frameTime);
+
+    if (!mWorld.hasAlivePlayer())
+    {
+        mPlayer.setMissionStatus(Player::MissionFailure);
+        requestStackPush(States::GameOver);
+    }
+    else if (mWorld.hasPlayerReachedEnd())
+    {
+        mPlayer.setMissionStatus(Player::MissionSuccess);
+        requestStackPush(States::GameOver);
+    }
 
     CommandQueue& commands = mWorld.getCommandQueue();
     mPlayer.handleRealtimeInput(commands);

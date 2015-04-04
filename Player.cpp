@@ -7,6 +7,8 @@
 #include <string>
 #include <algorithm>
 
+using namespace std::placeholders;
+
 
 struct ShipMover
 {
@@ -24,12 +26,15 @@ struct ShipMover
 };
 
 Player::Player()
+: mCurrentMissionStatus(MissionRunning)
 {
     // Set initial key bindings
     mKeyBinding[sf::Keyboard::Left] = MoveLeft;
     mKeyBinding[sf::Keyboard::Right] = MoveRight;
     mKeyBinding[sf::Keyboard::Up] = MoveUp;
     mKeyBinding[sf::Keyboard::Down] = MoveDown;
+    mKeyBinding[sf::Keyboard::Space] = Fire;
+    mKeyBinding[sf::Keyboard::M] = LaunchMissile;
 
     // Set initial action bindings
     initializeActions();
@@ -87,14 +92,19 @@ sf::Keyboard::Key Player::getAssignedKey(Action action) const
     return sf::Keyboard::Unknown;
 }
 
+void Player::setMissionStatus(MissionStatus status)
+{
+    mCurrentMissionStatus = status;
+}
+
 void Player::initializeActions()
 {
-    const float playerSpeed = 400.f;
-
-    mActionBinding[MoveLeft].action = derivedAction<Ship>(ShipMover(-playerSpeed, 0.f));
-    mActionBinding[MoveRight].action = derivedAction<Ship>(ShipMover(+playerSpeed, 0.f));
-    mActionBinding[MoveUp].action = derivedAction<Ship>(ShipMover(0.f, -playerSpeed));
-    mActionBinding[MoveDown].action = derivedAction<Ship>(ShipMover(0.f, +playerSpeed));
+    mActionBinding[MoveLeft].action         = derivedAction<Ship>(ShipMover(-1,  0));
+    mActionBinding[MoveRight].action        = derivedAction<Ship>(ShipMover(+1,  0));
+    mActionBinding[MoveUp].action           = derivedAction<Ship>(ShipMover( 0, -1));
+    mActionBinding[MoveDown].action         = derivedAction<Ship>(ShipMover( 0, +1));
+    mActionBinding[Fire].action             = derivedAction<Ship>([] (Ship& s, sf::Time) { a.fire(); });
+    mActionBinding[LaunchMissile].action    = derivedAction<Ship>([] (Ship& s, sf::Time) { a.fire(); });
 }
 
 bool Player::isRealtimeAction(Action action)
@@ -105,6 +115,7 @@ bool Player::isRealtimeAction(Action action)
         case MoveRight:
         case MoveUp:
         case MoveDown:
+        case Fire:
             return true;
         default:
             return false;

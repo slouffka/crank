@@ -4,6 +4,7 @@
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/RenderStates.hpp>
 
+
 TextNode::TextNode(const FontManager& fonts, const std::string& text)
 {
     mText.setFont(fonts.get(Fonts::Main));
