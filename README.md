@@ -5,7 +5,7 @@ I am writing this game while learning C++ gamedev using a book “SFML Game Deve
 So most of the code mimics the book samples but is adopted to my own needs as I progress
 through the book chapters.
 
-![Latest Screenshot](public/img/crank-menus-05042015.png)
+![Latest Screenshot](public/img/crank-gameplay-05042015.png)
 
 Book & Game progress:
 
