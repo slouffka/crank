@@ -7,12 +7,13 @@
 #include "MenuState.hpp"
 #include "PauseState.hpp"
 #include "SettingsState.hpp"
+#include "GameOverState.hpp"
 
 
 const sf::Time Application::TimePerFrame = sf::seconds(1.f / 60.f);
 
 Application::Application()
-: mWindow(sf::VideoMode(800, 600), "Crank 06-Menus", sf::Style::Close)
+: mWindow(sf::VideoMode(1024, 768), "Crank 07-Gameplay", sf::Style::Close)
 , mTextures()
 , mFonts()
 , mPlayer()
@@ -129,4 +130,5 @@ void Application::registerStates()
     mStateStack.registerState<GameState>(States::Game);
     mStateStack.registerState<PauseState>(States::Pause);
     mStateStack.registerState<SettingsState>(States::Settings);
+    mStateStack.registerState<GameOverState>(States::GameOver);
 }

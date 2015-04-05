@@ -19,7 +19,7 @@ struct ShipMover
 
     void operator() (Ship& ship, sf::Time) const
     {
-        ship.accelerate(velocity);
+        ship.accelerate(velocity * ship.getMaxSpeed());
     }
 
     sf::Vector2f velocity;
@@ -109,7 +109,7 @@ void Player::initializeActions()
     mActionBinding[MoveUp].action           = derivedAction<Ship>(ShipMover( 0, -1));
     mActionBinding[MoveDown].action         = derivedAction<Ship>(ShipMover( 0, +1));
     mActionBinding[Fire].action             = derivedAction<Ship>([] (Ship& s, sf::Time) { s.fire(); });
-    mActionBinding[LaunchMissile].action    = derivedAction<Ship>([] (Ship& s, sf::Time) { s.fire(); });
+    mActionBinding[LaunchMissile].action    = derivedAction<Ship>([] (Ship& s, sf::Time) { s.launchMissile(); });
 }
 
 bool Player::isRealtimeAction(Action action)
@@ -122,6 +122,7 @@ bool Player::isRealtimeAction(Action action)
         case MoveDown:
         case Fire:
             return true;
+
         default:
             return false;
     }
