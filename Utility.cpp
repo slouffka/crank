@@ -3,8 +3,22 @@
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Text.hpp>
 
+#include <random>
 #include <cmath>
+#include <ctime>
+#include <cassert>
 
+
+namespace
+{
+    std::default_random_engine createRandomEngine()
+    {
+        auto seed = static_cast<unsigned long>(std::time(nullptr));
+        return std::default_random_engine(seed);
+    }
+
+    auto RandomEngine = createRandomEngine();
+}
 
 std::string toString(sf::Keyboard::Key key)
 {
@@ -134,10 +148,15 @@ void centerOrigin(sf::Text& text)
 
 float toDegree(float radian)
 {
+    return 180.f / 3.141592653589793238462643383f * radian;
+}
+
+float toRadian(float degree)
+{
     return 3.141592653589793238462643383f / 180.f * degree;
 }
 
-int toRadian(float degree)
+int randomInt(int exclusiveMax)
 {
     std::uniform_int_distribution<> distr(0, exclusiveMax - 1);
     return distr(RandomEngine);

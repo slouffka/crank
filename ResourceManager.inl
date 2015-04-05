@@ -1,3 +1,4 @@
+
 template <typename Resource, typename Identifier>
 void ResourceManager<Resource, Identifier>::load(Identifier id, const std::string& filename)
 {
@@ -6,6 +7,7 @@ void ResourceManager<Resource, Identifier>::load(Identifier id, const std::strin
     if (!resource->loadFromFile(filename))
         throw std::runtime_error("ResourceManager::load - Failed to load " + filename);
 
+    // If loading successful, insert resource to map
     insertResource(id, std::move(resource));
 }
 
@@ -18,6 +20,7 @@ void ResourceManager<Resource, Identifier>::load(Identifier id, const std::strin
     if (!resource->loadFromFile(filename, secondParam))
         throw std::runtime_error("ResourceManager::load - Failed to load " + filename);
 
+    // If loading successful, insert resource to map
     insertResource(id, std::move(resource));
 }
 
@@ -42,6 +45,7 @@ const Resource& ResourceManager<Resource, Identifier>::get(Identifier id) const
 template <typename Resource, typename Identifier>
 void ResourceManager<Resource, Identifier>::insertResource(Identifier id, std::unique_ptr<Resource> resource)
 {
+    // Insert and check success
     auto inserted = mResourceMap.insert(std::make_pair(id, std::move(resource)));
     assert(inserted.second);
 }

@@ -13,7 +13,7 @@ namespace
     const std::vector<PickupData> Table = initializePickupData();
 }
 
-Pickup::Pickup(Type type, const TexturesManager& textures)
+Pickup::Pickup(Type type, const TextureManager& textures)
 : Entity(1)
 , mType(type)
 , mSprite(textures.get(Table[type].texture))

@@ -23,7 +23,7 @@ class Ship : public Entity
 
 
     public:
-                                Ship(Type type, const TextureManager& textures, FontManager& fonts);
+                                Ship(Type type, const TextureManager& textures, const FontManager& fonts);
 
         virtual unsigned int    getCategory() const;
         virtual sf::FloatRect   getBoundingRect() const;

@@ -11,7 +11,7 @@
 #include <cmath>
 
 
-SceneNode::SceneNode()
+SceneNode::SceneNode(Category::Type category)
 : mChildren()
 , mParent(nullptr)
 , mDefaultCategory(category)
@@ -118,7 +118,7 @@ void SceneNode::onCommand(const Command& command, sf::Time frameTime)
 
 unsigned int SceneNode::getCategory() const
 {
-    return Category::Scene;
+    return mDefaultCategory;
 }
 
 void SceneNode::checkSceneCollision(SceneNode& sceneGraph, std::set<Pair>& collisionPairs)

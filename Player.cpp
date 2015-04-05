@@ -97,14 +97,19 @@ void Player::setMissionStatus(MissionStatus status)
     mCurrentMissionStatus = status;
 }
 
+Player::MissionStatus Player::getMissionStatus() const
+{
+    return mCurrentMissionStatus;
+}
+
 void Player::initializeActions()
 {
     mActionBinding[MoveLeft].action         = derivedAction<Ship>(ShipMover(-1,  0));
     mActionBinding[MoveRight].action        = derivedAction<Ship>(ShipMover(+1,  0));
     mActionBinding[MoveUp].action           = derivedAction<Ship>(ShipMover( 0, -1));
     mActionBinding[MoveDown].action         = derivedAction<Ship>(ShipMover( 0, +1));
-    mActionBinding[Fire].action             = derivedAction<Ship>([] (Ship& s, sf::Time) { a.fire(); });
-    mActionBinding[LaunchMissile].action    = derivedAction<Ship>([] (Ship& s, sf::Time) { a.fire(); });
+    mActionBinding[Fire].action             = derivedAction<Ship>([] (Ship& s, sf::Time) { s.fire(); });
+    mActionBinding[LaunchMissile].action    = derivedAction<Ship>([] (Ship& s, sf::Time) { s.fire(); });
 }
 
 bool Player::isRealtimeAction(Action action)

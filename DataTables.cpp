@@ -13,7 +13,7 @@ std::vector<ShipData> initializeShipData()
 
     data[Ship::Eagle].hitpoints = 100;
     data[Ship::Eagle].speed = 200.f;
-    data[Ship::Eagle].fireInterval = sf;:seconds(1);
+    data[Ship::Eagle].fireInterval = sf::seconds(1);
     data[Ship::Eagle].texture = Textures::Eagle;
 
     data[Ship::Raptor].hitpoints = 20;
@@ -61,7 +61,7 @@ std::vector<PickupData> initializePickupData()
     std::vector<PickupData> data(Pickup::TypeCount);
 
     data[Pickup::HealthRefill].texture = Textures::HealthRefill;
-    data[Pickup::HealthRefill].action = [] (Ship& a) { a.repair(25); };
+    data[Pickup::HealthRefill].action = [] (Ship& s) { s.repair(25); };
 
     data[Pickup::MissileRefill].texture = Textures::MissileRefill;
     data[Pickup::MissileRefill].action = std::bind(&Ship::collectMissiles, _1, 3);

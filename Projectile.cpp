@@ -12,7 +12,7 @@
 
 namespace
 {
-    const std::vector<ProjectileData> Table = initializeProjectile();
+    const std::vector<ProjectileData> Table = initializeProjectileData();
 }
 
 Projectile::Projectile(Type type, const TextureManager& textures)

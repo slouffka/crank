@@ -41,14 +41,14 @@ int Entity::getHitpoints() const
     return mHitpoints;
 }
 
-void repair(int hitpoints)
+void Entity::repair(int points)
 {
     assert(points > 0);
 
     mHitpoints += points;
 }
 
-void Entiry::damage(int points)
+void Entity::damage(int points)
 {
     assert(points > 0);
 
@@ -65,7 +65,7 @@ bool Entity::isDestroyed() const
     return mHitpoints <= 0;
 }
 
-void Entity::updateCurrent(sf::Time frameTime)
+void Entity::updateCurrent(sf::Time frameTime, CommandQueue&)
 {
     move(mVelocity * frameTime.asSeconds());
 }

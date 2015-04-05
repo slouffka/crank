@@ -16,7 +16,7 @@ namespace
     const std::vector<ShipData> Table = initializeShipData();
 }
 
-Ship::Ship(Type type, const TextureManager& textures, FontManager& fonts)
+Ship::Ship(Type type, const TextureManager& textures, const FontManager& fonts)
 : Entity(Table[type].hitpoints)
 , mType(type)
 , mSprite(textures.get(Table[type].texture))
@@ -150,11 +150,128 @@ void Ship::fire()
 
 void Ship::launchMissile()
 {
-    if (mMissilesAmmo > 0)
+    if (mMissileAmmo > 0)
     {
         mIsLaunchingMissile = true;
         --mMissileAmmo;
     }
 }
 
-void Ship::updateMovementPattern
+void Ship::updateMovementPattern(sf::Time frameTime)
+{
+    // Enemy airplane: Movement pattern
+    const std::vector<Direction>& directions = Table[mType].directions;
+    if (!directions.empty())
+    {
+        // Moved long enough in current direction: Change direction
+        if (mTravelledDistance > directions[mDirectionIndex].distance)
+        {
+            mDirectionIndex = (mDirectionIndex + 1) % directions.size();
+            mTravelledDistance = 0.f;
+        }
+
+        // Compute velocity from directions
+        float radians = toRadian(directions[mDirectionIndex].angle + 90.f);
+        float vx = getMaxSpeed() * std::cos(radians);
+        float vy = getMaxSpeed() * std::sin(radians);
+
+        setVelocity(vx, vy);
+
+        mTravelledDistance += getMaxSpeed() * frameTime.asSeconds();
+    }
+}
+
+void Ship::checkPickupDrop(CommandQueue& commands)
+{
+    if (!isAllied() && randomInt(3) == 0)
+        commands.push(mDropPickupCommand);
+}
+
+void Ship::checkProjectileLaunch(sf::Time frameTime, CommandQueue& commands)
+{
+    // Enemies try to fire all the time
+    if (!isAllied())
+        fire();
+
+    // Check for automatic gunfire, allow only in intervals
+    if (mIsFiring && mFireCountdown <= sf::Time::Zero)
+    {
+        // Interval expired: We can fire a new bullet
+        commands.push(mFireCommand);
+        mFireCountdown += Table[mType].fireInterval / (mFireRateLevel + 1.f);
+        mIsFiring = false;
+    }
+    else if (mFireCountdown > sf::Time::Zero)
+    {
+        // Interval not expired: Decrease it further
+        mFireCountdown -= frameTime;
+        mIsFiring = false;
+    }
+
+    if (mIsLaunchingMissile)
+    {
+        commands.push(mMissileCommand);
+        mIsLaunchingMissile = false;
+    }
+}
+
+void Ship::createBullets(SceneNode& node, const TextureManager& textures) const
+{
+    Projectile::Type type = isAllied() ? Projectile::AlliedBullet : Projectile::EnemyBullet;
+
+    switch (mSpreadLevel)
+    {
+        case 1:
+            createProjectile(node, type, 0.0f, 0.5f, textures);
+            break;
+
+        case 2:
+            createProjectile(node, type, -0.33f, 0.33f, textures);
+            createProjectile(node, type, +0.33f, 0.33f, textures);
+            break;
+
+        case 3:
+            createProjectile(node, type, -0.5f, 0.33f, textures);
+            createProjectile(node, type,  0.0f,  0.5f, textures);
+            createProjectile(node, type, +0.5f, 0.33f, textures);
+            break;
+    }
+}
+
+void Ship::createProjectile(SceneNode& node, Projectile::Type type, float xOffset, float yOffset, const TextureManager& textures) const
+{
+    std::unique_ptr<Projectile> projectile(new Projectile(type, textures));
+
+    sf::Vector2f offset(xOffset * mSprite.getGlobalBounds().width, yOffset * mSprite.getGlobalBounds().height);
+    sf::Vector2f velocity(0, projectile->getMaxSpeed());
+
+    float sign = isAllied() ? -1.f : +1.f;
+    projectile->setPosition(getWorldPosition() + offset * sign);
+    projectile->setVelocity(velocity * sign);
+    node.attachChild(std::move(projectile));
+}
+
+void Ship::createPickup(SceneNode& node, const TextureManager& textures) const
+{
+    auto type = static_cast<Pickup::Type>(randomInt(Pickup::TypeCount));
+
+    std::unique_ptr<Pickup> pickup(new Pickup(type, textures));
+    pickup->setPosition(getWorldPosition());
+    pickup->setVelocity(0.f, 1.f);
+    node.attachChild(std::move(pickup));
+}
+
+void Ship::updateTexts()
+{
+    mHealthDisplay->setString(toString(getHitpoints()) + " HP");
+    mHealthDisplay->setPosition(0.f, 50.f);
+    mHealthDisplay->setRotation(-getRotation());
+
+    if (mMissileDisplay)
+    {
+        if (mMissileAmmo == 0)
+            mMissileDisplay->setString("");
+        else
+            mMissileDisplay->setString("M: " + toString(mMissileAmmo));
+    }
+}

@@ -1,11 +1,12 @@
-#ifndef CRANK_RESOURCE_MANAGER_HPP
-#define CRANK_RESOURCE_MANAGER_HPP
+#ifndef CRANK_RESOURCEMANAGER_HPP
+#define CRANK_RESOURCEMANAGER_HPP
 
 #include <map>
 #include <string>
 #include <memory>
 #include <stdexcept>
 #include <cassert>
+
 
 template <typename Resource, typename Identifier>
 class ResourceManager
@@ -27,4 +28,4 @@ class ResourceManager
 };
 
 #include "ResourceManager.inl"
-#endif // CRANK_RESOURCE_MANAGER_HPP
+#endif // CRANK_RESOURCEMANAGER_HPP

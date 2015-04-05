@@ -1,7 +1,7 @@
 #include "GameOverState.hpp"
 #include "Utility.hpp"
 #include "Player.hpp"
-#include "ResourceHolder.hpp"
+#include "ResourceManager.hpp"
 
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
