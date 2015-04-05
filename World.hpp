@@ -78,8 +78,8 @@ class World : private sf::NonCopyable
     private:
         sf::RenderWindow&                       mWindow;
         sf::View                                mWorldView;
-        TextureManager                          mTextures;
         FontManager&                            mFonts;
+        TextureManager                          mTextures;
 
         SceneNode                               mSceneGraph;
         std::array<SceneNode*, LayerCount>      mSceneLayers;
@@ -91,7 +91,7 @@ class World : private sf::NonCopyable
         Ship*                                   mPlayerShip;
 
         std::vector<SpawnPoint>                 mEnemySpawnPoints;
-        std::vector<Ship*>                       mActiveEnemies;
+        std::vector<Ship*>                      mActiveEnemies;
 };
 
 #endif // CRANK_WORLD_HPP
