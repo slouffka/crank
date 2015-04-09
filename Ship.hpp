@@ -6,6 +6,7 @@
 #include "ResourceIdentifiers.hpp"
 #include "Projectile.hpp"
 #include "TextNode.hpp"
+#include "Animation.hpp"
 
 #include <SFML/Graphics/Sprite.hpp>
 
@@ -27,6 +28,7 @@ class Ship : public Entity
 
         virtual unsigned int    getCategory() const;
         virtual sf::FloatRect   getBoundingRect() const;
+        virtual void            remove();
         virtual bool            isMarkedForRemoval() const;
         bool                    isAllied() const;
         float                   getMaxSpeed() const;
@@ -51,17 +53,20 @@ class Ship : public Entity
         void                    createPickup(SceneNode& node, const TextureManager& textures) const;
 
         void                    updateTexts();
+        void                    updateRollAnimation();
 
 
     private:
         Type                    mType;
         sf::Sprite              mSprite;
+        Animation               mExplosion;
         Command                 mFireCommand;
         Command                 mMissileCommand;
         sf::Time                mFireCountdown;
         bool                    mIsFiring;
         bool                    mIsLaunchingMissile;
-        bool                    mIsMarkedForRemoval;
+        bool                    mShowExplosion;
+        bool                    mSpawnedPickup;
 
         int                     mFireRateLevel;
         int                     mSpreadLevel;
