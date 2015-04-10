@@ -19,11 +19,12 @@ class Entity : public SceneNode
         void                repair(int points);
         void                damage(int points);
         void                destroy();
+        virtual void        remove();
         virtual bool        isDestroyed() const;
 
 
     protected:
-        virtual void        updateCurrent(sf::Time frameTime, CommandQueue& commands);
+        virtual void        updateCurrent(sf::Time dt, CommandQueue& commands);
 
 
     private:

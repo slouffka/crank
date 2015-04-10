@@ -15,7 +15,7 @@ class GameState : public State
                             GameState(StateStack& stack, Context context);
 
         virtual void        draw();
-        virtual bool        update(sf::Time frameTime);
+        virtual bool        update(sf::Time dt);
         virtual bool        handleEvent(const sf::Event& event);
 
 

@@ -18,6 +18,7 @@ Container::Container()
 void Container::pack(Component::Ptr component)
 {
     mChildren.push_back(component);
+
     if (!hasSelection() && component->isSelectable())
         select(mChildren.size() - 1);
 }

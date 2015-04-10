@@ -7,26 +7,31 @@ namespace sf
 {
     class Texture;
     class Font;
+    class Shader;
 }
 
 namespace Textures
 {
     enum ID
     {
-        Eagle,
-        Raptor,
-        Avenger,
-        Bullet,
-        Missile,
+        Entities,
         Background,
-        HealthRefill,
-        MissileRefill,
-        FireSpread,
-        FireRate,
         TitleScreen,
-        ButtonNormal,
-        ButtonSelected,
-        ButtonPressed
+        Buttons,
+        Explosion,
+        Particle,
+        FinishLine
+    };
+}
+
+namespace Shaders
+{
+    enum ID
+    {
+        BrightnessPass,
+        DownSamplePass,
+        GaussianBlurPass,
+        AddPass
     };
 }
 
@@ -44,5 +49,6 @@ class ResourceManager;
 
 typedef ResourceManager<sf::Texture, Textures::ID>  TextureManager;
 typedef ResourceManager<sf::Font, Fonts::ID>        FontManager;
+typedef ResourceManager<sf::Shader, Shaders::ID>     ShaderManager;
 
 #endif // CRANK_RESOURCEIDENTIFIERS_HPP

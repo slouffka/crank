@@ -24,7 +24,7 @@ class Pickup : public Entity
 
 
     public:
-        Pickup(Type type, const TextureManager& textures);
+                                Pickup(Type type, const TextureManager& textures);
 
         virtual unsigned int    getCategory() const;
         virtual sf::FloatRect   getBoundingRect() const;

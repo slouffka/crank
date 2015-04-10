@@ -1,5 +1,7 @@
 #include "GameState.hpp"
 
+#include <SFML/Graphics/RenderWindow.hpp>
+
 
 GameState::GameState(StateStack& stack, Context context)
 : State(stack, context)
@@ -14,9 +16,9 @@ void GameState::draw()
     mWorld.draw();
 }
 
-bool GameState::update(sf::Time frameTime)
+bool GameState::update(sf::Time dt)
 {
-    mWorld.update(frameTime);
+    mWorld.update(dt);
 
     if (!mWorld.hasAlivePlayer())
     {

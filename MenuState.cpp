@@ -28,7 +28,6 @@ MenuState::MenuState(StateStack& stack, Context context)
     settingsButton->setText("Settings");
     settingsButton->setCallback([this] ()
     {
-        // requestStackPop();
         requestStackPush(States::Settings);
     });
 

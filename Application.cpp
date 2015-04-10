@@ -13,7 +13,7 @@
 const sf::Time Application::TimePerFrame = sf::seconds(1.f / 60.f);
 
 Application::Application()
-: mWindow(sf::VideoMode(1024, 768), "Crank 07-Gameplay", sf::Style::Close)
+: mWindow(sf::VideoMode(1024, 768), "Crank 08-Gameplay", sf::Style::Close)
 , mTextures()
 , mFonts()
 , mPlayer()
@@ -26,10 +26,8 @@ Application::Application()
 
     mFonts.load(Fonts::Main, "res/fonts/arcade.ttf");
 
-    mTextures.load(Textures::TitleScreen, "res/textures/title-screen.png");
-    mTextures.load(Textures::ButtonNormal, "res/textures/button-normal.png");
-    mTextures.load(Textures::ButtonSelected, "res/textures/button-selected.png");
-    mTextures.load(Textures::ButtonPressed, "res/textures/button-pressed.png");
+    mTextures.load(Textures::TitleScreen,   "res/textures/title-screen.png");
+    mTextures.load(Textures::Buttons,       "res/textures/buttons.png");
 
     mStatisticsText.setFont(mFonts.get(Fonts::Main));
     mStatisticsText.setPosition(10.f, 10.f);
@@ -44,15 +42,15 @@ void Application::run()
     // floating time step, most smooth rendering but can't
     // guarantee repeated results for the same scene
     sf::Clock clock;
-    sf::Time frameTime = sf::Time::Zero;
+    sf::Time dt = sf::Time::Zero;
 
     while (mWindow.isOpen())
     {
-        frameTime = clock.restart();
+        dt = clock.restart();
 
         processInput();
-        update(frameTime);
-        updateStatistics(frameTime);
+        update(dt);
+        updateStatistics(dt);
         render();
     }
 
@@ -62,8 +60,8 @@ void Application::run()
 
     while (mWindow.isOpen())
     {
-        sf::Time frameTime = clock.restart();
-        timeSinceLastUpdate += frameTime;
+        sf::Time dt = clock.restart();
+        timeSinceLastUpdate += dt;
         while (timeSinceLastUpdate > TimePerFrame)
         {
             timeSinceLastUpdate -= TimePerFrame;
@@ -76,7 +74,7 @@ void Application::run()
                 mWindow.close();
         }
 
-        updateStatistics(frameTime);
+        updateStatistics(dt);
         render();
     } */
 }
@@ -93,9 +91,9 @@ void Application::processInput()
     }
 }
 
-void Application::update(sf::Time frameTime)
+void Application::update(sf::Time dt)
 {
-    mStateStack.update(frameTime);
+    mStateStack.update(dt);
 }
 
 void Application::render()
@@ -110,9 +108,9 @@ void Application::render()
     mWindow.display();
 }
 
-void Application::updateStatistics(sf::Time frameTime)
+void Application::updateStatistics(sf::Time dt)
 {
-    mStatisticsUpdateTime += frameTime;
+    mStatisticsUpdateTime += dt;
     mStatisticsNumFrames += 1;
     if (mStatisticsUpdateTime >= sf::seconds(1.0f))
     {

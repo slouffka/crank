@@ -1,4 +1,5 @@
 #include "Projectile.hpp"
+#include "EmitterNode.hpp"
 #include "DataTables.hpp"
 #include "Utility.hpp"
 #include "ResourceManager.hpp"
@@ -18,10 +19,22 @@ namespace
 Projectile::Projectile(Type type, const TextureManager& textures)
 : Entity(1)
 , mType(type)
-, mSprite(textures.get(Table[type].texture))
+, mSprite(textures.get(Table[type].texture), Table[type].textureRect)
 , mTargetDirection()
 {
     centerOrigin(mSprite);
+
+    // Add particle system for missiles
+    if (isGuided())
+    {
+        std::unique_ptr<EmitterNode> smoke(new EmitterNode(Particle::Smoke));
+        smoke->setPosition(0.f, getBoundingRect().height / 2.f);
+        attachChild(std::move(smoke));
+
+        std::unique_ptr<EmitterNode> propellant(new EmitterNode(Particle::Propellant));
+        propellant->setPosition(0.f, getBoundingRect().height / 2.f);
+        attachChild(std::move(propellant));
+    }
 }
 
 void Projectile::guideTowards(sf::Vector2f position)
@@ -35,13 +48,13 @@ bool Projectile::isGuided() const
     return mType == Missile;
 }
 
-void Projectile::updateCurrent(sf::Time frameTime, CommandQueue& commands)
+void Projectile::updateCurrent(sf::Time dt, CommandQueue& commands)
 {
     if (isGuided())
     {
         const float approachRate = 200.f;
 
-        sf::Vector2f newVelocity = unitVector(approachRate * frameTime.asSeconds() * mTargetDirection + getVelocity());
+        sf::Vector2f newVelocity = unitVector(approachRate * dt.asSeconds() * mTargetDirection + getVelocity());
         newVelocity *= getMaxSpeed();
         float angle = std::atan2(newVelocity.y, newVelocity.x);
 
@@ -49,7 +62,7 @@ void Projectile::updateCurrent(sf::Time frameTime, CommandQueue& commands)
         setVelocity(newVelocity);
     }
 
-    Entity::updateCurrent(frameTime, commands);
+    Entity::updateCurrent(dt, commands);
 }
 
 void Projectile::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const

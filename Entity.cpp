@@ -65,7 +65,7 @@ bool Entity::isDestroyed() const
     return mHitpoints <= 0;
 }
 
-void Entity::updateCurrent(sf::Time frameTime, CommandQueue&)
+void Entity::updateCurrent(sf::Time dt, CommandQueue&)
 {
-    move(mVelocity * frameTime.asSeconds());
+    move(mVelocity * dt.asSeconds());
 }

@@ -37,7 +37,7 @@ class StateStack : private sf::NonCopyable
         template <typename T>
         void                registerState(States::ID stateID);
 
-        void                update(sf::Time frameTime);
+        void                update(sf::Time dt);
         void                draw();
         void                handleEvent(const sf::Event& event);
 

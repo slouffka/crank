@@ -3,6 +3,7 @@
 #include "Pickup.hpp"
 #include "Foreach.hpp"
 #include "TextNode.hpp"
+#include "ParticleNode.hpp"
 #include <SFML/Graphics/RenderWindow.hpp>
 
 #include <algorithm>
@@ -10,20 +11,23 @@
 #include <limits>
 
 
-World::World(sf::RenderWindow& window, FontManager& fonts)
-: mWindow(window)
-, mWorldView(window.getDefaultView())
-, mFonts(fonts)
+World::World(sf::RenderTarget& outputTarget, FontManager& fonts)
+: mTarget(outputTarget)
+, mSceneTexture()
+, mWorldView(outputTarget.getDefaultView())
 , mTextures()
+, mFonts(fonts)
 , mSceneGraph()
 , mSceneLayers()
-, mWorldBounds(0.f, 0.f, mWorldView.getSize().x, 2000.f)
+, mWorldBounds(0.f, 0.f, mWorldView.getSize().x, 5000.f)
 , mSpawnPosition(mWorldView.getSize().x / 2.f, mWorldBounds.height - mWorldView.getSize().y / 2.f)
 , mScrollSpeed(-50.f)
 , mPlayerShip(nullptr)
 , mEnemySpawnPoints()
 , mActiveEnemies()
 {
+    mSceneTexture.create(mTarget.getSize().x, mTarget.getSize().y);
+
     loadTextures();
     buildScene();
 
@@ -31,10 +35,10 @@ World::World(sf::RenderWindow& window, FontManager& fonts)
     mWorldView.setCenter(mSpawnPosition);
 }
 
-void World::update(sf::Time frameTime)
+void World::update(sf::Time dt)
 {
     // Scroll the world
-    mWorldView.move(0.f, mScrollSpeed * frameTime.asSeconds());
+    mWorldView.move(0.f, mScrollSpeed * dt.asSeconds());
     mPlayerShip->setVelocity(0.f, 0.f);
 
     // Setup commands to destroy entities, and guide missiles
@@ -43,7 +47,7 @@ void World::update(sf::Time frameTime)
 
     // Forward commands to scene graph, adapt velocity (scrolling, diagonal correction)
     while (!mCommandQueue.isEmpty())
-        mSceneGraph.onCommand(mCommandQueue.pop(), frameTime);
+        mSceneGraph.onCommand(mCommandQueue.pop(), dt);
     adaptPlayerVelocity();
 
     // Collision detection and response (may destroy entities)
@@ -54,14 +58,25 @@ void World::update(sf::Time frameTime)
     spawnEnemies();
 
     // Regular update step, adapt position (correct if outside view)
-    mSceneGraph.update(frameTime, mCommandQueue);
+    mSceneGraph.update(dt, mCommandQueue);
     adaptPlayerPosition();
 }
 
 void World::draw()
 {
-    mWindow.setView(mWorldView);
-    mWindow.draw(mSceneGraph);
+    if (PostEffect::isSupported())
+    {
+        mSceneTexture.clear();
+        mSceneTexture.setView(mWorldView);
+        mSceneTexture.draw(mSceneGraph);
+        mSceneTexture.display();
+        mBloomEffect.apply(mSceneTexture, mTarget);
+    }
+    else
+    {
+        mTarget.setView(mWorldView);
+        mTarget.draw(mSceneGraph);
+    }
 }
 
 CommandQueue& World::getCommandQueue()
@@ -81,18 +96,11 @@ bool World::hasPlayerReachedEnd() const
 
 void World::loadTextures()
 {
-    mTextures.load(Textures::Eagle, "res/textures/eagle.png");
-    mTextures.load(Textures::Raptor, "res/textures/raptor.png");
-    mTextures.load(Textures::Avenger, "res/textures/avenger.png");
+    mTextures.load(Textures::Entities, "res/textures/entities.png");
     mTextures.load(Textures::Background, "res/textures/background.png");
-
-    mTextures.load(Textures::Bullet, "res/textures/bullet.png");
-    mTextures.load(Textures::Missile, "res/textures/missile.png");
-
-    mTextures.load(Textures::HealthRefill, "res/textures/health-refill.png");
-    mTextures.load(Textures::MissileRefill, "res/textures/missile-refill.png");
-    mTextures.load(Textures::FireSpread, "res/textures/fire-spread.png");
-    mTextures.load(Textures::FireRate, "res/textures/fire-rate.png");
+    mTextures.load(Textures::Explosion, "res/textures/explosion.png");
+    mTextures.load(Textures::Particle, "res/textures/particle.png");
+    mTextures.load(Textures::FinishLine, "res/textures/finish-line.png");
 }
 
 void World::adaptPlayerPosition()
@@ -188,7 +196,7 @@ void World::buildScene()
     // Initialize the different layers
     for (std::size_t i = 0; i < LayerCount; ++i)
     {
-        Category::Type category = (i == Space) ? Category::SceneSpaceLayer : Category::None;
+        Category::Type category = (i == LowerSpace) ? Category::SceneSpaceLayer : Category::None;
 
         SceneNode::Ptr layer(new SceneNode(category));
         mSceneLayers[i] = layer.get();
@@ -198,21 +206,38 @@ void World::buildScene()
 
     // Prepare the tiled background
     sf::Texture& texture = mTextures.get(Textures::Background);
-    sf::IntRect textureRect(mWorldBounds);
     texture.setRepeated(true);
+
+    float viewHeight = mWorldView.getSize().y;
+    sf::IntRect textureRect(mWorldBounds);
+    textureRect.height += static_cast<int>(viewHeight);
 
     // Add background sprite to the screen
     std::unique_ptr<SpriteNode> backgroundSprite(new SpriteNode(texture, textureRect));
-    backgroundSprite->setPosition(mWorldBounds.left, mWorldBounds.top);
+    backgroundSprite->setPosition(mWorldBounds.left, mWorldBounds.top - viewHeight);
     mSceneLayers[Background]->attachChild(std::move(backgroundSprite));
+
+    // Add the finish line to the scene
+    sf::Texture& finishTexture = mTextures.get(Textures::FinishLine);
+    std::unique_ptr<SpriteNode> finishSprite(new SpriteNode(finishTexture));
+    finishSprite->setPosition(0.f, -76.f);
+    mSceneLayers[Background]->attachChild(std::move(finishSprite));
+
+    // Add particle node to the screen
+    std::unique_ptr<ParticleNode> smokeNode(new ParticleNode(Particle::Smoke, mTextures));
+    mSceneLayers[LowerSpace]->attachChild(std::move(smokeNode));
+
+    // Add propellant particle node to the screen
+    std::unique_ptr<ParticleNode> propellantNode(new ParticleNode(Particle::Propellant, mTextures));
+    mSceneLayers[LowerSpace]->attachChild(std::move(propellantNode));
 
     // Add player's ship
     std::unique_ptr<Ship> player(new Ship(Ship::Eagle, mTextures, mFonts));
     mPlayerShip = player.get();
     mPlayerShip->setPosition(mSpawnPosition);
-    mSceneLayers[Space]->attachChild(std::move(player));
+    mSceneLayers[UpperSpace]->attachChild(std::move(player));
 
-    // Add enemy ship
+    // Add enemy ships
     addEnemies();
 }
 
@@ -220,12 +245,29 @@ void World::addEnemies()
 {
     addEnemy(Ship::Raptor,    0.f,  500.f);
     addEnemy(Ship::Raptor,    0.f, 1000.f);
-    addEnemy(Ship::Raptor, +100.f, 1100.f);
-    addEnemy(Ship::Raptor, -100.f, 1100.f);
-    addEnemy(Ship::Avenger, -70.f, 1400.f);
-    addEnemy(Ship::Avenger, -70.f, 1600.f);
-    addEnemy(Ship::Avenger,  70.f, 1400.f);
-    addEnemy(Ship::Avenger,  70.f, 1600.f);
+    addEnemy(Ship::Raptor, +100.f, 1150.f);
+    addEnemy(Ship::Raptor, -100.f, 1150.f);
+    addEnemy(Ship::Avenger,  70.f, 1500.f);
+    addEnemy(Ship::Avenger, -70.f, 1500.f);
+    addEnemy(Ship::Avenger, -70.f, 1710.f);
+    addEnemy(Ship::Avenger,  70.f, 1700.f);
+    addEnemy(Ship::Avenger,  30.f, 1850.f);
+    addEnemy(Ship::Raptor,  300.f, 2200.f);
+    addEnemy(Ship::Raptor, -300.f, 2200.f);
+    addEnemy(Ship::Raptor,    0.f, 2200.f);
+    addEnemy(Ship::Raptor,    0.f, 2500.f);
+    addEnemy(Ship::Avenger,-300.f, 2700.f);
+    addEnemy(Ship::Avenger,-300.f, 2700.f);
+    addEnemy(Ship::Raptor,    0.f, 3000.f);
+    addEnemy(Ship::Raptor,  250.f, 3250.f);
+    addEnemy(Ship::Raptor, -250.f, 3250.f);
+    addEnemy(Ship::Avenger,   0.f, 3500.f);
+    addEnemy(Ship::Avenger,   0.f, 3700.f);
+    addEnemy(Ship::Raptor,    0.f, 3800.f);
+    addEnemy(Ship::Avenger,   0.f, 4000.f);
+    addEnemy(Ship::Avenger,-200.f, 4200.f);
+    addEnemy(Ship::Raptor,  200.f, 4200.f);
+    addEnemy(Ship::Raptor,    0.f, 4400.f);
 
     // Sort all enemies according to their y value, such that lower enemies are checked first for spawning
     std::sort(mEnemySpawnPoints.begin(), mEnemySpawnPoints.end(), [] (SpawnPoint lhs, SpawnPoint rhs)
@@ -252,7 +294,7 @@ void World::spawnEnemies()
         enemy->setPosition(spawn.x, spawn.y);
         enemy->setRotation(180.f);
 
-        mSceneLayers[Space]->attachChild(std::move(enemy));
+        mSceneLayers[UpperSpace]->attachChild(std::move(enemy));
 
         // Enemy is spawned, remove from the list to spawn
         mEnemySpawnPoints.pop_back();

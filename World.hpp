@@ -8,6 +8,7 @@
 #include "Ship.hpp"
 #include "CommandQueue.hpp"
 #include "Command.hpp"
+#include "BloomEffect.hpp"
 
 #include <SFML/System/NonCopyable.hpp>
 #include <SFML/Graphics/View.hpp>
@@ -20,43 +21,44 @@
 // Forward declaration
 namespace sf
 {
-    class RenderWindow;
+    class RenderTarget;
 }
 
 class World : private sf::NonCopyable
 {
     public:
-        explicit                                World(sf::RenderWindow& window, FontManager& fonts);
-        void                                    update(sf::Time frameTime);
-        void                                    draw();
+        explicit                            World(sf::RenderTarget& outputTarget, FontManager& fonts);
+        void                                update(sf::Time dt);
+        void                                draw();
 
-        CommandQueue&                           getCommandQueue();
+        CommandQueue&                       getCommandQueue();
 
-        bool                                    hasAlivePlayer() const;
-        bool                                    hasPlayerReachedEnd() const;
+        bool                                hasAlivePlayer() const;
+        bool                                hasPlayerReachedEnd() const;
 
 
     private:
-        void                                    loadTextures();
-        void                                    adaptPlayerPosition();
-        void                                    adaptPlayerVelocity();
-        void                                    handleCollisions();
+        void                                loadTextures();
+        void                                adaptPlayerPosition();
+        void                                adaptPlayerVelocity();
+        void                                handleCollisions();
 
-        void                                    buildScene();
-        void                                    addEnemies();
-        void                                    addEnemy(Ship::Type type, float relX, float relY);
-        void                                    spawnEnemies();
-        void                                    destroyEntitiesOutsideView();
-        void                                    guideMissiles();
-        sf::FloatRect                           getViewBounds() const;
-        sf::FloatRect                           getBattlefieldBounds() const;
+        void                                buildScene();
+        void                                addEnemies();
+        void                                addEnemy(Ship::Type type, float relX, float relY);
+        void                                spawnEnemies();
+        void                                destroyEntitiesOutsideView();
+        void                                guideMissiles();
+        sf::FloatRect                       getViewBounds() const;
+        sf::FloatRect                       getBattlefieldBounds() const;
 
 
     private:
         enum Layer
         {
             Background,
-            Space,
+            LowerSpace,
+            UpperSpace,
             LayerCount
         };
 
@@ -76,22 +78,25 @@ class World : private sf::NonCopyable
 
 
     private:
-        sf::RenderWindow&                       mWindow;
-        sf::View                                mWorldView;
-        FontManager&                            mFonts;
-        TextureManager                          mTextures;
+        sf::RenderTarget&                   mTarget;
+        sf::RenderTexture                   mSceneTexture;
+        sf::View                            mWorldView;
+        TextureManager                      mTextures;
+        FontManager&                        mFonts;
 
-        SceneNode                               mSceneGraph;
-        std::array<SceneNode*, LayerCount>      mSceneLayers;
-        CommandQueue                            mCommandQueue;
+        SceneNode                           mSceneGraph;
+        std::array<SceneNode*, LayerCount>  mSceneLayers;
+        CommandQueue                        mCommandQueue;
 
-        sf::FloatRect                           mWorldBounds;
-        sf::Vector2f                            mSpawnPosition;
-        float                                   mScrollSpeed;
-        Ship*                                   mPlayerShip;
+        sf::FloatRect                       mWorldBounds;
+        sf::Vector2f                        mSpawnPosition;
+        float                               mScrollSpeed;
+        Ship*                               mPlayerShip;
 
-        std::vector<SpawnPoint>                 mEnemySpawnPoints;
-        std::vector<Ship*>                      mActiveEnemies;
+        std::vector<SpawnPoint>             mEnemySpawnPoints;
+        std::vector<Ship*>                  mActiveEnemies;
+
+        BloomEffect                         mBloomEffect;
 };
 
 #endif // CRANK_WORLD_HPP

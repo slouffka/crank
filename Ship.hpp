@@ -43,10 +43,10 @@ class Ship : public Entity
 
     private:
         virtual void            drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
-        virtual void            updateCurrent(sf::Time frameTime, CommandQueue& commands);
-        void                    updateMovementPattern(sf::Time frameTime);
+        virtual void            updateCurrent(sf::Time dt, CommandQueue& commands);
+        void                    updateMovementPattern(sf::Time dt);
         void                    checkPickupDrop(CommandQueue& commands);
-        void                    checkProjectileLaunch(sf::Time frameTime, CommandQueue& commands);
+        void                    checkProjectileLaunch(sf::Time dt, CommandQueue& commands);
 
         void                    createBullets(SceneNode& node, const TextureManager& textures) const;
         void                    createProjectile(SceneNode& node, Projectile::Type type, float xOffset, float yOffset, const TextureManager& textures) const;

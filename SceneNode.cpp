@@ -35,10 +35,10 @@ SceneNode::Ptr SceneNode::detachChild(const SceneNode& node)
     return result;
 }
 
-void SceneNode::update(sf::Time frameTime, CommandQueue& commands)
+void SceneNode::update(sf::Time dt, CommandQueue& commands)
 {
-    updateCurrent(frameTime, commands);
-    updateChildren(frameTime, commands);
+    updateCurrent(dt, commands);
+    updateChildren(dt, commands);
 }
 
 void SceneNode::updateCurrent(sf::Time, CommandQueue&)
@@ -46,10 +46,10 @@ void SceneNode::updateCurrent(sf::Time, CommandQueue&)
     // Do nothing by default.
 }
 
-void SceneNode::updateChildren(sf::Time frameTime, CommandQueue& commands)
+void SceneNode::updateChildren(sf::Time dt, CommandQueue& commands)
 {
     FOREACH(Ptr& child, mChildren)
-        child->update(frameTime, commands);
+        child->update(dt, commands);
 }
 
 void SceneNode::draw(sf::RenderTarget& target, sf::RenderStates states) const
@@ -65,7 +65,7 @@ void SceneNode::draw(sf::RenderTarget& target, sf::RenderStates states) const
     // drawBoundingRect(target, states);
 }
 
-void SceneNode::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const
+void SceneNode::drawCurrent(sf::RenderTarget&, sf::RenderStates) const
 {
     // Do nothing by default.
 }
@@ -105,15 +105,15 @@ sf::Transform SceneNode::getWorldTransform() const
     return transform;
 }
 
-void SceneNode::onCommand(const Command& command, sf::Time frameTime)
+void SceneNode::onCommand(const Command& command, sf::Time dt)
 {
     // Command current node, if category matches
     if (command.category & getCategory())
-        command.action(*this, frameTime);
+        command.action(*this, dt);
 
     // Command children
     FOREACH(Ptr& child, mChildren)
-        child->onCommand(command, frameTime);
+        child->onCommand(command, dt);
 }
 
 unsigned int SceneNode::getCategory() const

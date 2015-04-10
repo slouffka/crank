@@ -19,13 +19,15 @@ namespace
 Ship::Ship(Type type, const TextureManager& textures, const FontManager& fonts)
 : Entity(Table[type].hitpoints)
 , mType(type)
-, mSprite(textures.get(Table[type].texture))
+, mSprite(textures.get(Table[type].texture), Table[type].textureRect)
+, mExplosion(textures.get(Textures::Explosion))
 , mFireCommand()
 , mMissileCommand()
 , mFireCountdown(sf::Time::Zero)
 , mIsFiring(false)
 , mIsLaunchingMissile(false)
-, mIsMarkedForRemoval(false)
+, mShowExplosion(true)
+, mSpawnedPickup(false)
 , mFireRateLevel(1)
 , mSpreadLevel(1)
 , mMissileAmmo(2)
@@ -35,7 +37,12 @@ Ship::Ship(Type type, const TextureManager& textures, const FontManager& fonts)
 , mHealthDisplay(nullptr)
 , mMissileDisplay(nullptr)
 {
+    mExplosion.setFrameSize(sf::Vector2i(256, 256));
+    mExplosion.setNumFrames(16);
+    mExplosion.setDuration(sf::seconds(1));
+
     centerOrigin(mSprite);
+    centerOrigin(mExplosion);
 
     mFireCommand.category = Category::SceneSpaceLayer;
     mFireCommand.action   = [this, &textures] (SceneNode& node, sf::Time)
@@ -72,28 +79,32 @@ Ship::Ship(Type type, const TextureManager& textures, const FontManager& fonts)
 
 void Ship::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const
 {
-    target.draw(mSprite, states);
+    if (isDestroyed() && mShowExplosion)
+        target.draw(mExplosion, states);
+    else
+        target.draw(mSprite, states);
 }
 
-void Ship::updateCurrent(sf::Time frameTime, CommandQueue& commands)
+void Ship::updateCurrent(sf::Time dt, CommandQueue& commands)
 {
+    // Update texts and roll animation
+    updateTexts();
+    updateRollAnimation();
+
     // Entity has been destroyed: Possibly drop pickup, mark for removal
     if (isDestroyed())
     {
         checkPickupDrop(commands);
-
-        mIsMarkedForRemoval = true;
+        mExplosion.update(dt);
         return;
     }
 
-    checkProjectileLaunch(frameTime, commands);
+    // Check if bullets or missiles are fired
+    checkProjectileLaunch(dt, commands);
 
     // Update enemy movement pattern; apply velocity
-    updateMovementPattern(frameTime);
-    Entity::updateCurrent(frameTime, commands);
-
-    // Update texts
-    updateTexts();
+    updateMovementPattern(dt);
+    Entity::updateCurrent(dt, commands);
 }
 
 unsigned int Ship::getCategory() const
@@ -111,7 +122,13 @@ sf::FloatRect Ship::getBoundingRect() const
 
 bool Ship::isMarkedForRemoval() const
 {
-    return mIsMarkedForRemoval;
+    return isDestroyed() && (mExplosion.isFinished() || !mShowExplosion);
+}
+
+void Ship::remove()
+{
+    Entity::remove();
+    mShowExplosion = false;
 }
 
 bool Ship::isAllied() const
@@ -157,7 +174,7 @@ void Ship::launchMissile()
     }
 }
 
-void Ship::updateMovementPattern(sf::Time frameTime)
+void Ship::updateMovementPattern(sf::Time dt)
 {
     // Enemy airplane: Movement pattern
     const std::vector<Direction>& directions = Table[mType].directions;
@@ -177,17 +194,19 @@ void Ship::updateMovementPattern(sf::Time frameTime)
 
         setVelocity(vx, vy);
 
-        mTravelledDistance += getMaxSpeed() * frameTime.asSeconds();
+        mTravelledDistance += getMaxSpeed() * dt.asSeconds();
     }
 }
 
 void Ship::checkPickupDrop(CommandQueue& commands)
 {
-    if (!isAllied() && randomInt(3) == 0)
+    if (!isAllied() && randomInt(3) == 0 && !mSpawnedPickup)
         commands.push(mDropPickupCommand);
+
+    mSpawnedPickup = true;
 }
 
-void Ship::checkProjectileLaunch(sf::Time frameTime, CommandQueue& commands)
+void Ship::checkProjectileLaunch(sf::Time dt, CommandQueue& commands)
 {
     // Enemies try to fire all the time
     if (!isAllied())
@@ -204,7 +223,7 @@ void Ship::checkProjectileLaunch(sf::Time frameTime, CommandQueue& commands)
     else if (mFireCountdown > sf::Time::Zero)
     {
         // Interval not expired: Decrease it further
-        mFireCountdown -= frameTime;
+        mFireCountdown -= dt;
         mIsFiring = false;
     }
 
@@ -263,15 +282,37 @@ void Ship::createPickup(SceneNode& node, const TextureManager& textures) const
 
 void Ship::updateTexts()
 {
-    mHealthDisplay->setString(toString(getHitpoints()) + " HP");
+    if (isDestroyed())
+        mHealthDisplay->setString("");
+    else
+        mHealthDisplay->setString(toString(getHitpoints()) + " HP");
     mHealthDisplay->setPosition(0.f, 50.f);
     mHealthDisplay->setRotation(-getRotation());
 
+    // Display missiles, if available
     if (mMissileDisplay)
     {
         if (mMissileAmmo == 0)
             mMissileDisplay->setString("");
         else
             mMissileDisplay->setString("M: " + toString(mMissileAmmo));
+    }
+}
+
+void Ship::updateRollAnimation()
+{
+    if (Table[mType].hasRollAnimation)
+    {
+        sf::IntRect textureRect = Table[mType].textureRect;
+
+        // Roll left: Texture rect offset once
+        if (getVelocity().x < 0.f)
+            textureRect.left += textureRect.width;
+
+        // Roll right: Texture rect offset twice
+        else if (getVelocity().x > 0.f)
+            textureRect.left += 2 * textureRect.width;
+
+        mSprite.setTextureRect(textureRect);
     }
 }

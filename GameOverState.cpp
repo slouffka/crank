@@ -41,10 +41,10 @@ void GameOverState::draw()
     window.draw(mGameOverText);
 }
 
-bool GameOverState::update(sf::Time frameTime)
+bool GameOverState::update(sf::Time dt)
 {
     // Show state for 3 seconds, after return to menu
-    mElapsedTime += frameTime;
+    mElapsedTime += dt;
     if (mElapsedTime > sf::seconds(3))
     {
         requestStateClear();
