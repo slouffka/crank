@@ -86,9 +86,9 @@ sf::FloatRect Animation::getLocalBounds() const
     return sf::FloatRect(getOrigin(), static_cast<sf::Vector2f>(getFrameSize()));
 }
 
-sf::FloatRect Animation::getGlobalBound() const
+sf::FloatRect Animation::getGlobalBounds() const
 {
-    return getTransform().transformRect(gelLocalBounds());
+    return getTransform().transformRect(getLocalBounds());
 }
 
 void Animation::update(sf::Time dt)
