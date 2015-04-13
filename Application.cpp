@@ -41,7 +41,7 @@ void Application::run()
 {
     // floating time step, most smooth rendering but can't
     // guarantee repeated results for the same scene
-    sf::Clock clock;
+    /* sf::Clock clock;
     sf::Time dt = sf::Time::Zero;
 
     while (mWindow.isOpen())
@@ -52,10 +52,10 @@ void Application::run()
         update(dt);
         updateStatistics(dt);
         render();
-    }
+    }  */
 
     // fixed time step, jagged rendering but accurate physics
-    /* sf::Clock clock;
+    sf::Clock clock;
     sf::Time timeSinceLastUpdate = sf::Time::Zero;
 
     while (mWindow.isOpen())
@@ -76,7 +76,7 @@ void Application::run()
 
         updateStatistics(dt);
         render();
-    } */
+    }
 }
 
 void Application::processInput()

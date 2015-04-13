@@ -17,12 +17,12 @@ Animation::Animation()
 
 Animation::Animation(const sf::Texture& texture)
 : mSprite(texture)
-    , mFrameSize()
-    , mNumFrames(0)
-    , mCurrentFrame(0)
-    , mDuration(sf::Time::Zero)
-    , mElapsedTime(sf::Time::Zero)
-    , mRepeat(false)
+, mFrameSize()
+, mNumFrames(0)
+, mCurrentFrame(0)
+, mDuration(sf::Time::Zero)
+, mElapsedTime(sf::Time::Zero)
+, mRepeat(false)
 {
 }
 
@@ -116,7 +116,7 @@ void Animation::update(sf::Time dt)
             textureRect.top += textureRect.height;
         }
 
-        // And peogress to next frame
+        // And progress to next frame
         mElapsedTime -= timePerFrame;
         if (mRepeat)
         {

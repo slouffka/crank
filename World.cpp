@@ -37,7 +37,7 @@ World::World(sf::RenderTarget& outputTarget, FontManager& fonts)
 
 void World::update(sf::Time dt)
 {
-    // Scroll the world
+    // Scroll the world, reset player velocity
     mWorldView.move(0.f, mScrollSpeed * dt.asSeconds());
     mPlayerShip->setVelocity(0.f, 0.f);
 
@@ -106,7 +106,7 @@ void World::loadTextures()
 void World::adaptPlayerPosition()
 {
     // Keep player's positioin inside the screen bounds, at least borderDistance units from border
-    sf::FloatRect viewBounds(mWorldView.getCenter() - mWorldView.getSize() / 2.f, mWorldView.getSize());
+    sf::FloatRect viewBounds = getViewBounds();
     const float borderDistance = 40.f;
 
     sf::Vector2f position = mPlayerShip->getPosition();
@@ -205,15 +205,15 @@ void World::buildScene()
     }
 
     // Prepare the tiled background
-    sf::Texture& texture = mTextures.get(Textures::Background);
-    texture.setRepeated(true);
+    sf::Texture& bgTexture = mTextures.get(Textures::Background);
+    bgTexture.setRepeated(true);
 
     float viewHeight = mWorldView.getSize().y;
     sf::IntRect textureRect(mWorldBounds);
     textureRect.height += static_cast<int>(viewHeight);
 
-    // Add background sprite to the screen
-    std::unique_ptr<SpriteNode> backgroundSprite(new SpriteNode(texture, textureRect));
+    // Add the background sprite to the scene
+    std::unique_ptr<SpriteNode> backgroundSprite(new SpriteNode(bgTexture, textureRect));
     backgroundSprite->setPosition(mWorldBounds.left, mWorldBounds.top - viewHeight);
     mSceneLayers[Background]->attachChild(std::move(backgroundSprite));
 
@@ -223,11 +223,11 @@ void World::buildScene()
     finishSprite->setPosition(0.f, -76.f);
     mSceneLayers[Background]->attachChild(std::move(finishSprite));
 
-    // Add particle node to the screen
+    // Add particle node to the scene
     std::unique_ptr<ParticleNode> smokeNode(new ParticleNode(Particle::Smoke, mTextures));
     mSceneLayers[LowerSpace]->attachChild(std::move(smokeNode));
 
-    // Add propellant particle node to the screen
+    // Add propellant particle node to the scene
     std::unique_ptr<ParticleNode> propellantNode(new ParticleNode(Particle::Propellant, mTextures));
     mSceneLayers[LowerSpace]->attachChild(std::move(propellantNode));
 
@@ -269,6 +269,7 @@ void World::addEnemies()
     addEnemy(Ship::Raptor,  200.f, 4200.f);
     addEnemy(Ship::Raptor,    0.f, 4400.f);
 
+
     // Sort all enemies according to their y value, such that lower enemies are checked first for spawning
     std::sort(mEnemySpawnPoints.begin(), mEnemySpawnPoints.end(), [] (SpawnPoint lhs, SpawnPoint rhs)
     {
@@ -308,7 +309,7 @@ void World::destroyEntitiesOutsideView()
     command.action = derivedAction<Entity>([this] (Entity& e, sf::Time)
     {
         if (!getBattlefieldBounds().intersects(e.getBoundingRect()))
-            e.destroy();
+            e.remove();
     });
 
     mCommandQueue.push(command);
@@ -325,7 +326,7 @@ void World::guideMissiles()
             mActiveEnemies.push_back(&enemy);
     });
 
-    // Setup command that guides all missiles to the eemy which is currently closest to the player
+    // Setup command that guides all missiles to the enemy which is currently closest to the player
     Command missileGuider;
     missileGuider.category = Category::AlliedProjectile;
     missileGuider.action = derivedAction<Projectile>([this] (Projectile& missile, sf::Time)
