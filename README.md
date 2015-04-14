@@ -20,9 +20,10 @@ Book & Game progress:
 
 On the way:
 
-* 09 Audio:         To be reviewed.
-* 10 Network:       To be reviewed.
-* 11 Production:    Make the finished & polished product.
+* 09 Audio:         Positional Audio Effects, Ingame Music Player.
+* 10 Network:       Realtime Game Server.
+* 11 Entities:      Entity Component System.
+* 12 Scripting:     Scripting Language, Text Based Configuration, Entity Definitions.
 
 # The Game
 
