@@ -5,7 +5,7 @@ I am writing this game while learning C++ gamedev using a book “SFML Game Deve
 So most of the code mimics the book samples but is adopted to my own needs as I progress
 through the book chapters.
 
-![Latest Screenshot](public/img/crank-gameplay-05042015.png)
+![Latest Screenshot](public/img/crank-graphics-14042015.png)
 
 Book & Game progress:
 
@@ -16,10 +16,10 @@ Book & Game progress:
 * 05 States:        Game States, State Management etc.
 * 06 Menus:         Base Gui, MenuState, Settings, Control bindings.
 * 07 Gameplay:      Game Rules, Enemies, Projectiles, Collision Detection, Pickups, GameOver.
+* 08 Graphics:      Particle System, Smoke, Propellant, Shaders, PostEffect, BloomEffect.
 
 On the way:
 
-* 08 Graphics:      To be reviewed.
 * 09 Audio:         To be reviewed.
 * 10 Network:       To be reviewed.
 * 11 Production:    Make the finished & polished product.
