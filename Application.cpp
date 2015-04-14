@@ -24,7 +24,7 @@ Application::Application()
 {
     mWindow.setKeyRepeatEnabled(false);
 
-    mFonts.load(Fonts::Main, "res/fonts/arcade.ttf");
+    mFonts.load(Fonts::Main, "res/fonts/sansation.ttf");
 
     mTextures.load(Textures::TitleScreen,   "res/textures/title-screen.png");
     mTextures.load(Textures::Buttons,       "res/textures/buttons.png");

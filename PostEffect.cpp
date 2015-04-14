@@ -20,8 +20,8 @@ void PostEffect::applyShader(const sf::Shader& shader, sf::RenderTarget& output)
     vertices[3] = sf::Vertex(sf::Vector2f(outputSize),      sf::Vector2f(1, 0));
 
     sf::RenderStates states;
-    states.shader       = &shader;
-    states.blendMode    = sf::BlendNone;
+    states.shader    = &shader;
+    states.blendMode = sf::BlendNone;
 
     output.draw(vertices, states);
 }
