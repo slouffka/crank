@@ -43,12 +43,37 @@ namespace Fonts
     };
 }
 
+namespace SoundEffect
+{
+    enum ID
+    {
+        AlliedGunfire,
+        EnemyGunfire,
+        Explosion1,
+        Explosion2,
+        LaunchMissile,
+        CollectPickup,
+        Button
+    };
+}
+
+namespace Music
+{
+    enum ID
+    {
+        MenuTheme,
+        MissionTheme
+    };
+}
+
+
 // Forward declaration and a few type definitions
 template <typename Resource, typename Identifier>
 class ResourceManager;
 
-typedef ResourceManager<sf::Texture, Textures::ID>  TextureManager;
-typedef ResourceManager<sf::Font, Fonts::ID>        FontManager;
-typedef ResourceManager<sf::Shader, Shaders::ID>     ShaderManager;
+typedef ResourceManager<sf::Texture, Textures::ID>          TextureManager;
+typedef ResourceManager<sf::Font, Fonts::ID>                FontManager;
+typedef ResourceManager<sf::Shader, Shaders::ID>            ShaderManager;
+typedef ResourceManager<sf::SoundBuffer, SoundEffect::ID>   SoundManager;
 
 #endif // CRANK_RESOURCEIDENTIFIERS_HPP

@@ -16,6 +16,7 @@ namespace Category
         AlliedProjectile    = 1 << 5,
         EnemyProjectile     = 1 << 6,
         ParticleSystem      = 1 << 7,
+        SoundEffect         = 1 << 8,
 
         Ship = PlayerShip | AlliedShip | EnemyShip,
         Projectile = AlliedProjectile | EnemyProjectile

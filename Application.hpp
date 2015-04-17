@@ -5,10 +5,12 @@
 #include "ResourceIdentifiers.hpp"
 #include "Player.hpp"
 #include "StateStack.hpp"
+#include "MusicPlayer.hpp"
+#include "SoundPlayer.hpp"
 
+#include <SFML/System/Time.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Text.hpp>
-#include <SFML/System/Time.hpp>
 
 
 class Application
@@ -35,6 +37,8 @@ class Application
         FontManager             mFonts;
         Player                  mPlayer;
 
+        MusicPlayer             mMusic;
+        SoundPlayer             mSounds;
         StateStack              mStateStack;
 
         sf::Text                mStatisticsText;

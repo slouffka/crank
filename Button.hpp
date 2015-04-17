@@ -14,6 +14,8 @@
 #include <functional>
 
 
+class SoundPlayer;
+
 namespace GUI
 {
 
@@ -59,6 +61,7 @@ class Button : public Component
         sf::Sprite              mSprite;
         sf::Text                mText;
         bool                    mIsToggle;
+        SoundPlayer&            mSounds;
 };
 
 }

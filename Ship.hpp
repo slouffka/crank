@@ -66,6 +66,7 @@ class Ship : public Entity
         bool                    mIsFiring;
         bool                    mIsLaunchingMissile;
         bool                    mShowExplosion;
+        bool                    mPlayedExplosionSound;
         bool                    mSpawnedPickup;
 
         int                     mFireRateLevel;
