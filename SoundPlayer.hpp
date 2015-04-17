@@ -15,19 +15,19 @@
 class SoundPlayer : private sf::NonCopyable
 {
     public:
-                        SoundPlayer();
+                                    SoundPlayer();
 
-        void            play(SoundEffect::ID effect);
-        void            play(SoundEffect::ID effect, sf::Vector2f position);
+        void                        play(SoundEffect::ID effect);
+        void                        play(SoundEffect::ID effect, sf::Vector2f position);
 
-        void            removeStoppedSounds();
-        void            setListenerPosition(sf::Vector2f position);
-        sf::Vector2f    getListenerPosition() const;
+        void                        removeStoppedSounds();
+        void                        setListenerPosition(sf::Vector2f position);
+        sf::Vector2f                getListenerPosition() const;
 
 
     private:
-        SoundBufferManager      mSoundBuffers;
-        std::list<sf::Sound>    mSounds;
+        SoundBufferManager          mSoundBuffers;
+        std::list<sf::Sound>        mSounds;
 };
 
 #endif // CRANK_SOUNDPLAYER_HPP

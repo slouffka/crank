@@ -1,7 +1,6 @@
 #ifndef CRANK_SOUNDNODE_HPP
 #define CRANK_SOUNDNODE_HPP
 
-
 #include "SceneNode.hpp"
 #include "ResourceIdentifiers.hpp"
 

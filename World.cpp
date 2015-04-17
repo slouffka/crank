@@ -4,6 +4,7 @@
 #include "Foreach.hpp"
 #include "TextNode.hpp"
 #include "ParticleNode.hpp"
+#include "SoundNode.hpp"
 #include <SFML/Graphics/RenderWindow.hpp>
 
 #include <algorithm>
@@ -11,12 +12,13 @@
 #include <limits>
 
 
-World::World(sf::RenderTarget& outputTarget, FontManager& fonts)
+World::World(sf::RenderTarget& outputTarget, FontManager& fonts, SoundPlayer& sounds)
 : mTarget(outputTarget)
 , mSceneTexture()
 , mWorldView(outputTarget.getDefaultView())
 , mTextures()
 , mFonts(fonts)
+, mSounds(sounds)
 , mSceneGraph()
 , mSceneLayers()
 , mWorldBounds(0.f, 0.f, mWorldView.getSize().x, 5000.f)
@@ -60,6 +62,8 @@ void World::update(sf::Time dt)
     // Regular update step, adapt position (correct if outside view)
     mSceneGraph.update(dt, mCommandQueue);
     adaptPlayerPosition();
+
+    updateSounds();
 }
 
 void World::draw()
@@ -191,6 +195,15 @@ void World::handleCollisions()
     }
 }
 
+void World::updateSounds()
+{
+    // Set listener's position to player position
+    mSounds.setListenerPosition(mPlayerShip->getWorldPosition());
+
+    // Remove unused sounds
+    mSounds.removeStoppedSounds();
+}
+
 void World::buildScene()
 {
     // Initialize the different layers
@@ -230,6 +243,10 @@ void World::buildScene()
     // Add propellant particle node to the scene
     std::unique_ptr<ParticleNode> propellantNode(new ParticleNode(Particle::Propellant, mTextures));
     mSceneLayers[LowerSpace]->attachChild(std::move(propellantNode));
+
+    // Add sound effect node
+    std::unique_ptr<SoundNode> soundNode(new SoundNode(mSounds));
+    mSceneGraph.attachChild(std::move(soundNode));
 
     // Add player's ship
     std::unique_ptr<Ship> player(new Ship(Ship::Eagle, mTextures, mFonts));

@@ -17,12 +17,15 @@ Application::Application()
 , mTextures()
 , mFonts()
 , mPlayer()
-, mStateStack(State::Context(mWindow, mTextures, mFonts, mPlayer))
+, mMusic()
+, mSounds()
+, mStateStack(State::Context(mWindow, mTextures, mFonts, mPlayer, mMusic, mSounds))
 , mStatisticsText()
 , mStatisticsUpdateTime()
 , mStatisticsNumFrames(0)
 {
     mWindow.setKeyRepeatEnabled(false);
+    // mWindow.setVerticalSyncEnabled(true);
 
     mFonts.load(Fonts::Main, "res/fonts/sansation.ttf");
 
@@ -31,10 +34,12 @@ Application::Application()
 
     mStatisticsText.setFont(mFonts.get(Fonts::Main));
     mStatisticsText.setPosition(10.f, 10.f);
-    mStatisticsText.setCharacterSize(14u);
+    mStatisticsText.setCharacterSize(10u);
 
     registerStates();
     mStateStack.pushState(States::Title);
+
+    mMusic.setVolume(25.f);
 }
 
 void Application::run()

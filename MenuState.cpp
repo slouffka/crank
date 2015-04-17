@@ -1,6 +1,7 @@
 #include "MenuState.hpp"
 #include "Button.hpp"
 #include "Utility.hpp"
+#include "MusicPlayer.hpp"
 #include "ResourceManager.hpp"
 
 #include <SFML/Graphics/RenderWindow.hpp>
@@ -42,6 +43,9 @@ MenuState::MenuState(StateStack& stack, Context context)
     mGUIContainer.pack(playButton);
     mGUIContainer.pack(settingsButton);
     mGUIContainer.pack(exitButton);
+
+    // Play menu theme
+    context.music->play(Music::MenuTheme);
 }
 
 void MenuState::draw()

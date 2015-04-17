@@ -9,6 +9,7 @@
 #include "CommandQueue.hpp"
 #include "Command.hpp"
 #include "BloomEffect.hpp"
+#include "SoundPlayer.hpp"
 
 #include <SFML/System/NonCopyable.hpp>
 #include <SFML/Graphics/View.hpp>
@@ -83,6 +84,7 @@ class World : private sf::NonCopyable
         sf::View                            mWorldView;
         TextureManager                      mTextures;
         FontManager&                        mFonts;
+        SoundPlayer&                        mSounds;
 
         SceneNode                           mSceneGraph;
         std::array<SceneNode*, LayerCount>  mSceneLayers;
