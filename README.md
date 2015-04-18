@@ -17,10 +17,10 @@ Book & Game progress:
 * 06 Menus:         Base Gui, MenuState, Settings, Control bindings.
 * 07 Gameplay:      Game Rules, Enemies, Projectiles, Collision Detection, Pickups, GameOver.
 * 08 Graphics:      Particle System, Smoke, Propellant, Shaders, PostEffect, BloomEffect.
+* 09 Audio:         Positional Sound Effects, Game Music, Shooting, Explosion sounds.
 
 On the way:
 
-* 09 Audio:         Positional Audio Effects, Ingame Music Player.
 * 10 Network:       Realtime Game Server.
 * 11 Entities:      Entity Component System.
 * 12 Scripting:     Scripting Language, Text Based Configuration, Entity Definitions.
