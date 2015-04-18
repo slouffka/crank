@@ -2,7 +2,7 @@
 #define CRANK_SETTINGSSTATE_HPP
 
 #include "State.hpp"
-#include "Player.hpp"
+#include "KeyBinding.hpp"
 #include "Container.hpp"
 #include "Button.hpp"
 #include "Label.hpp"
@@ -19,20 +19,20 @@ class SettingsState : public State
                                         SettingsState(StateStack& stack, Context context);
 
         virtual void                    draw();
-        virtual bool                    update(sf::Time frameTime);
+        virtual bool                    update(sf::Time dt);
         virtual bool                    handleEvent(const sf::Event& event);
 
 
     private:
         void                            updateLabels();
-        void                            addButtonLabel(Player::Action action, float y, const std::string& text, Context context);
+        void                            addButtonLabel(std::size_t index, std::size_t x, std::size_t y, const std::string& text, Context context);
 
 
     private:
-        sf::Sprite                                          mBackgroundSprite;
-        GUI::Container                                      mGUIContainer;
-        std::array<GUI::Button::Ptr, Player::ActionCount>   mBindingButtons;
-        std::array<GUI::Label::Ptr, Player::ActionCount>    mBindingLabels;
+        sf::Sprite                                              mBackgroundSprite;
+        GUI::Container                                          mGUIContainer;
+        std::array<GUI::Button::Ptr, 2 * Player::ActionCount>   mBindingButtons;
+        std::array<GUI::Label::Ptr, 2 * Player::ActionCount>    mBindingLabels;
 };
 
 #endif // CRANK_SETTINGSSTATE_HPP
