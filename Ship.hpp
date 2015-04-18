@@ -39,6 +39,7 @@ class Ship : public Entity
 
         void                    fire();
         void                    launchMissile();
+        void                    playLocalSound(CommandQueue& commands, SoundEffect::ID effect);
 
 
     private:

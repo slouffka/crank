@@ -26,7 +26,7 @@ class MusicPlayer : private sf::NonCopyable
     private:
         sf::Music                           mMusic;
         std::map<Music::ID, std::string>    mFilenames;
-        float                               mVolume
+        float                               mVolume;
 };
 
 #endif // CRANK_MUSICPLAYER_HPP

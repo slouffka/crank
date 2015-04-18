@@ -75,6 +75,6 @@ class ResourceManager;
 typedef ResourceManager<sf::Texture, Textures::ID>          TextureManager;
 typedef ResourceManager<sf::Font, Fonts::ID>                FontManager;
 typedef ResourceManager<sf::Shader, Shaders::ID>            ShaderManager;
-typedef ResourceManager<sf::SoundBuffer, SoundEffect::ID>   SoundManager;
+typedef ResourceManager<sf::SoundBuffer, SoundEffect::ID>   SoundBufferManager;
 
 #endif // CRANK_RESOURCEIDENTIFIERS_HPP

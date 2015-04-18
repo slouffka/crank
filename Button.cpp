@@ -11,10 +11,10 @@
 namespace GUI
 {
 
-Button::Button(const FontManager& fonts, const TextureManager& textures)
+Button::Button(State::Context context)
 : mCallback()
-, mSprite(textures.get(Textures::Buttons))
-, mText("", fonts.get(Fonts::Main), 16)
+, mSprite(context.textures->get(Textures::Buttons))
+, mText("", context.fonts->get(Fonts::Main), 16)
 , mIsToggle(false)
 , mSounds(*context.sounds)
 {

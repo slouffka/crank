@@ -3,7 +3,7 @@
 
 #include "Component.hpp"
 #include "ResourceIdentifiers.hpp"
-#include "ResourceManager.hpp"
+#include "State.hpp"
 
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Text.hpp>
@@ -35,7 +35,7 @@ class Button : public Component
 
 
     public:
-                                Button(const FontManager& fonts, const TextureManager& textures);
+                                Button(State::Context context);
 
         void                    setCallback(Callback callback);
         void                    setText(const std::string& text);

@@ -28,7 +28,7 @@ namespace sf
 class World : private sf::NonCopyable
 {
     public:
-        explicit                            World(sf::RenderTarget& outputTarget, FontManager& fonts);
+        explicit                            World(sf::RenderTarget& outputTarget, FontManager& fonts, SoundPlayer& sounds);
         void                                update(sf::Time dt);
         void                                draw();
 
@@ -43,6 +43,7 @@ class World : private sf::NonCopyable
         void                                adaptPlayerPosition();
         void                                adaptPlayerVelocity();
         void                                handleCollisions();
+        void                                updateSounds();
 
         void                                buildScene();
         void                                addEnemies();

@@ -1,4 +1,4 @@
-clang++ -std=c++11 -O3 -lsfml-window -lsfml-graphics -lsfml-system -o crank \
+clang++ -std=c++11 -O3 -lsfml-window -lsfml-audio -lsfml-graphics -lsfml-system -o crank \
     Animation.cpp       \
     Application.cpp     \
     Button.cpp          \
@@ -15,6 +15,7 @@ clang++ -std=c++11 -O3 -lsfml-window -lsfml-graphics -lsfml-system -o crank \
     Label.cpp           \
     LoadingState.cpp    \
     MenuState.cpp       \
+    MusicPlayer.cpp     \
     ParallelTask.cpp    \
     ParticleNode.cpp    \
     PauseState.cpp      \
@@ -24,6 +25,8 @@ clang++ -std=c++11 -O3 -lsfml-window -lsfml-graphics -lsfml-system -o crank \
     Projectile.cpp      \
     SceneNode.cpp       \
     SettingsState.cpp   \
+    SoundNode.cpp       \
+    SoundPlayer.cpp     \
     SpriteNode.cpp      \
     TextNode.cpp        \
     State.cpp           \

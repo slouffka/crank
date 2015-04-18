@@ -104,7 +104,7 @@ void Ship::updateCurrent(sf::Time dt, CommandQueue& commands)
         // Play explosion sound only once
         if (!mPlayedExplosionSound)
         {
-            SoundEffect::ID soundEffect = (randomInt(2) == 0) ? soundEffect::Explosion1 : SoundEffect::Explosion2;
+            SoundEffect::ID soundEffect = (randomInt(2) == 0) ? SoundEffect::Explosion1 : SoundEffect::Explosion2;
             playLocalSound(commands, soundEffect);
 
             mPlayedExplosionSound = true;
@@ -187,7 +187,7 @@ void Ship::launchMissile()
     }
 }
 
-void Aircraft::playLocalSound(CommandQueue& commands, SoundEffect::ID effect)
+void Ship::playLocalSound(CommandQueue& commands, SoundEffect::ID effect)
 {
     sf::Vector2f worldPosition = getWorldPosition();
 
@@ -199,7 +199,7 @@ void Aircraft::playLocalSound(CommandQueue& commands, SoundEffect::ID effect)
             node.playSound(effect, worldPosition);
         });
 
-    commands.push(commands);
+    commands.push(command);
 }
 
 void Ship::updateMovementPattern(sf::Time dt)

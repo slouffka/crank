@@ -31,7 +31,7 @@ SoundPlayer::SoundPlayer()
     sf::Listener::setDirection(0.f, 0.f, -1.f);
 }
 
-void SoundPlayer::player(SoundEffect::ID effect)
+void SoundPlayer::play(SoundEffect::ID effect)
 {
     play(effect, getListenerPosition());
 }
