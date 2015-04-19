@@ -205,6 +205,9 @@ void GameServer::tick()
 
                 sendToAll(packet);
             }
+
+            mLastSpawnTime = now();
+            mTimeForNextSpawn = sf::milliseconds(2000 + randomInt(6000));
         }
     }
 }
