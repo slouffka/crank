@@ -5,7 +5,7 @@
 #include <SFML/System/Thread.hpp>
 #include <SFML/System/Clock.hpp>
 #include <SFML/System/Sleep.hpp>
-#include <SFML/System/Rect.hpp>
+#include <SFML/Graphics/Rect.hpp>
 #include <SFML/System/TcpListener.hpp>
 #include <SFML/System/TcpSocket.hpp>
 

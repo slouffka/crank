@@ -32,6 +32,7 @@ class Ship : public Entity
         virtual bool            isMarkedForRemoval() const;
         bool                    isAllied() const;
         float                   getMaxSpeed() const;
+        void                    disablePickups();
 
         void                    increaseFireRate();
         void                    increaseSpread();
@@ -40,6 +41,10 @@ class Ship : public Entity
         void                    fire();
         void                    launchMissile();
         void                    playLocalSound(CommandQueue& commands, SoundEffect::ID effect);
+        int                     getIdentifier();
+        void                    setIdentifier(int identifier);
+        int                     getMissileAmmo() const;
+        void                    setMissileAmmo(int ammo);
 
 
     private:
@@ -67,8 +72,9 @@ class Ship : public Entity
         bool                    mIsFiring;
         bool                    mIsLaunchingMissile;
         bool                    mShowExplosion;
-        bool                    mPlayedExplosionSound;
+        bool                    mExplosionBegan;
         bool                    mSpawnedPickup;
+        bool                    mPickupsEnabled;
 
         int                     mFireRateLevel;
         int                     mSpreadLevel;
@@ -79,6 +85,8 @@ class Ship : public Entity
         std::size_t             mDirectionIndex;
         TextNode*               mHealthDisplay;
         TextNode*               mMissileDisplay;
+
+        int                     mIdentifier;
 };
 
 #endif // CRANK_SHIP_HPP

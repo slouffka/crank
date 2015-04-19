@@ -4,6 +4,7 @@
 #include "Pickup.hpp"
 #include "CommandQueue.hpp"
 #include "SoundNode.hpp"
+#include "NetworkNode.hpp"
 #include "ResourceManager.hpp"
 
 #include <SFML/Graphics/RenderTarget.hpp>
@@ -30,8 +31,8 @@ Ship::Ship(Type type, const TextureManager& textures, const FontManager& fonts)
 , mIsFiring(false)
 , mIsLaunchingMissile(false)
 , mShowExplosion(true)
-, mPlayedExplosionSound(false)
 , mSpawnedPickup(false)
+, mPickupsEnabled(false)
 , mFireRateLevel(1)
 , mSpreadLevel(1)
 , mMissileAmmo(2)
@@ -40,6 +41,7 @@ Ship::Ship(Type type, const TextureManager& textures, const FontManager& fonts)
 , mDirectionIndex(0)
 , mHealthDisplay(nullptr)
 , mMissileDisplay(nullptr)
+, mIdentifier(0)
 {
     mExplosion.setFrameSize(sf::Vector2i(256, 256));
     mExplosion.setNumFrames(16);
@@ -81,12 +83,27 @@ Ship::Ship(Type type, const TextureManager& textures, const FontManager& fonts)
     updateTexts();
 }
 
+int Ship::getMissileAmmo() const
+{
+    return mMissileAmmo;
+}
+
+void Ship::setMissileAmmo(int ammo)
+{
+    mMissileAmmo = ammo;
+}
+
 void Ship::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const
 {
     if (isDestroyed() && mShowExplosion)
         target.draw(mExplosion, states);
     else
         target.draw(mSprite, states);
+}
+
+void Ship::disablePickups()
+{
+    mPickupsEnabled = false;
 }
 
 void Ship::updateCurrent(sf::Time dt, CommandQueue& commands)
@@ -102,12 +119,28 @@ void Ship::updateCurrent(sf::Time dt, CommandQueue& commands)
         mExplosion.update(dt);
 
         // Play explosion sound only once
-        if (!mPlayedExplosionSound)
+        if (!mExplosionBegan)
         {
+            // Play sound effect
             SoundEffect::ID soundEffect = (randomInt(2) == 0) ? SoundEffect::Explosion1 : SoundEffect::Explosion2;
             playLocalSound(commands, soundEffect);
 
-            mPlayedExplosionSound = true;
+            // Emit network game action for enemy explosions
+            if (!isAllied())
+            {
+                sf::Vector2f position = getWorldPosition();
+
+                Command command;
+                command.category = Category::Network;
+                command.action = derivedAction<NetworkNode>([position] (NetworkNode& node, sf::Time)
+                {
+                    node.notifyGameAction(GameActions::EnemyExplode, position);
+                });
+
+                commands.push(command);
+            }
+
+            mExplosionBegan = true;
         }
         return;
     }
@@ -202,6 +235,16 @@ void Ship::playLocalSound(CommandQueue& commands, SoundEffect::ID effect)
     commands.push(command);
 }
 
+int Ship::getIdentifier()
+{
+    return mIdentifier;
+}
+
+void Ship::setIdentifier(int identifier)
+{
+    mIdentifier = identifier;
+}
+
 void Ship::updateMovementPattern(sf::Time dt)
 {
     // Enemy airplane: Movement pattern
@@ -228,6 +271,8 @@ void Ship::updateMovementPattern(sf::Time dt)
 
 void Ship::checkPickupDrop(CommandQueue& commands)
 {
+    // Drop pickup, if enemy ship, with probability 1/3, if pickup not yet dropped
+    // and if not in network node (where pickups are dropped via packets)
     if (!isAllied() && randomInt(3) == 0 && !mSpawnedPickup)
         commands.push(mDropPickupCommand);
 
@@ -257,6 +302,7 @@ void Ship::checkProjectileLaunch(sf::Time dt, CommandQueue& commands)
         mIsFiring = false;
     }
 
+    // Check for missile launch
     if (mIsLaunchingMissile)
     {
         commands.push(mMissileCommand);
@@ -314,6 +360,7 @@ void Ship::createPickup(SceneNode& node, const TextureManager& textures) const
 
 void Ship::updateTexts()
 {
+    // Display hitpoints
     if (isDestroyed())
         mHealthDisplay->setString("");
     else
