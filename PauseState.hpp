@@ -11,11 +11,11 @@
 class PauseState : public State
 {
     public:
-                            PauseState(StateStack& stack, Context context);
+                            PauseState(StateStack& stack, Context context, bool letUpdatesThrough = false);
                             ~PauseState();
 
         virtual void        draw();
-        virtual bool        update(sf::Time frameTime);
+        virtual bool        update(sf::Time dt);
         virtual bool        handleEvent(const sf::Event& event);
 
 
@@ -23,6 +23,7 @@ class PauseState : public State
         sf::Sprite          mBackgroundSprite;
         sf::Text            mPausedText;
         GUI::Container      mGUIContainer;
+        bool                mLetUpdatesThrough;
 };
 
 #endif // CRANK_PAUSESTATE_HPP

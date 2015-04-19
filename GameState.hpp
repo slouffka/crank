@@ -21,7 +21,7 @@ class GameState : public State
 
     private:
         World               mWorld;
-        Player&             mPlayer;
+        Player              mPlayer;
 };
 
 #endif // CRANK_GAMESTATE_HPP

@@ -6,8 +6,8 @@
 #include <SFML/System/Clock.hpp>
 #include <SFML/System/Sleep.hpp>
 #include <SFML/Graphics/Rect.hpp>
-#include <SFML/System/TcpListener.hpp>
-#include <SFML/System/TcpSocket.hpp>
+#include <SFML/Network/TcpListener.hpp>
+#include <SFML/Network/TcpSocket.hpp>
 
 #include <vector>
 #include <memory>

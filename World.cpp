@@ -5,14 +5,16 @@
 #include "TextNode.hpp"
 #include "ParticleNode.hpp"
 #include "SoundNode.hpp"
-#include <SFML/Graphics/RenderWindow.hpp>
+#include "NetworkNode.hpp"
+#include "Utility.hpp"
+#include <SFML/Graphics/RenderTarget.hpp>
 
 #include <algorithm>
 #include <cmath>
 #include <limits>
 
 
-World::World(sf::RenderTarget& outputTarget, FontManager& fonts, SoundPlayer& sounds)
+World::World(sf::RenderTarget& outputTarget, FontManager& fonts, SoundPlayer& sounds, bool networked)
 : mTarget(outputTarget)
 , mSceneTexture()
 , mWorldView(outputTarget.getDefaultView())
@@ -24,9 +26,13 @@ World::World(sf::RenderTarget& outputTarget, FontManager& fonts, SoundPlayer& so
 , mWorldBounds(0.f, 0.f, mWorldView.getSize().x, 5000.f)
 , mSpawnPosition(mWorldView.getSize().x / 2.f, mWorldBounds.height - mWorldView.getSize().y / 2.f)
 , mScrollSpeed(-50.f)
-, mPlayerShip(nullptr)
+, mScrollSpeedCompensation(1.f)
+, mPlayerShips()
 , mEnemySpawnPoints()
 , mActiveEnemies()
+, mNetworkedWorld(networked)
+, mNetworkNode(nullptr)
+, mFinishSprite(nullptr)
 {
     mSceneTexture.create(mTarget.getSize().x, mTarget.getSize().y);
 
@@ -37,11 +43,18 @@ World::World(sf::RenderTarget& outputTarget, FontManager& fonts, SoundPlayer& so
     mWorldView.setCenter(mSpawnPosition);
 }
 
+void World::setWorldScrollCompensation(float compensation)
+{
+    mScrollSpeedCompensation = compensation;
+}
+
 void World::update(sf::Time dt)
 {
     // Scroll the world, reset player velocity
-    mWorldView.move(0.f, mScrollSpeed * dt.asSeconds());
-    mPlayerShip->setVelocity(0.f, 0.f);
+    mWorldView.move(0.f, mScrollSpeed * dt.asSeconds() * mScrollSpeedCompensation);
+
+    FOREACH(Ship* ship, mPlayerShips)
+        ship->setVelocity(0.f, 0.f);
 
     // Setup commands to destroy entities, and guide missiles
     destroyEntitiesOutsideView();
@@ -50,10 +63,15 @@ void World::update(sf::Time dt)
     // Forward commands to scene graph, adapt velocity (scrolling, diagonal correction)
     while (!mCommandQueue.isEmpty())
         mSceneGraph.onCommand(mCommandQueue.pop(), dt);
+
     adaptPlayerVelocity();
 
     // Collision detection and response (may destroy entities)
     handleCollisions();
+
+    // Remove ships that were destroyed (World::removeWrecks() only destroys the entities, not the pointers in mPlayerShips)
+    auto firstToRemove = std::remove_if(mPlayerShips.begin(), mPlayerShips.end(), std::mem_fn(&Ship::isMarkedForRemoval));
+    mPlayerShips.erase(firstToRemove, mPlayerShips.end());
 
     // Remove all destroyed entities, create new ones
     mSceneGraph.removeWrecks();
@@ -88,14 +106,73 @@ CommandQueue& World::getCommandQueue()
     return mCommandQueue;
 }
 
+Ship* World::getShip(int identifier) const
+{
+    FOREACH(Ship* ship, mPlayerShips)
+    {
+        if (ship->getIdentifier() == identifier)
+            return ship;
+    }
+
+    return nullptr;
+}
+
+void World::removeShip(int identifier)
+{
+    Ship* ship = getShip(identifier);
+    if (ship)
+    {
+        ship->destroy();
+        mPlayerShips.erase(std::find(mPlayerShips.begin(), mPlayerShips.end(), ship));
+    }
+}
+
+Ship* World::addShip(int identifier)
+{
+    std::unique_ptr<Ship> player(new Ship(Ship::Eagle, mTextures, mFonts));
+    player->setPosition(mWorldView.getCenter());
+    player->setIdentifier(identifier);
+
+    mPlayerShips.push_back(player.get());
+    mSceneLayers[UpperSpace]->attachChild(std::move(player));
+    return mPlayerShips.back();
+}
+
+void World::createPickup(sf::Vector2f position, Pickup::Type type)
+{
+    std::unique_ptr<Pickup> pickup(new Pickup(type, mTextures));
+    pickup->setPosition(position);
+    pickup->setVelocity(0.f, 1.f);
+    mSceneLayers[UpperSpace]->attachChild(std::move(pickup));
+}
+
+bool World::pollGameAction(GameActions::Action& out)
+{
+    return mNetworkNode->pollGameAction(out);
+}
+
+void World::setCurrentBattleFieldPosition(float lineY)
+{
+    mWorldView.setCenter(mWorldView.getCenter().x, lineY - mWorldView.getSize().y / 2);
+    mSpawnPosition.y = mWorldBounds.height;
+}
+
+void World::setWorldHeight(float height)
+{
+    mWorldBounds.height = height;
+}
+
 bool World::hasAlivePlayer() const
 {
-    return !mPlayerShip->isMarkedForRemoval();
+    return mPlayerShips.size() > 0;
 }
 
 bool World::hasPlayerReachedEnd() const
 {
-    return !mWorldBounds.contains(mPlayerShip->getPosition());
+    if (Ship* ship = getShip(1))
+        return !mWorldBounds.contains(ship->getPosition());
+    else
+        return false;
 }
 
 void World::loadTextures()
@@ -113,24 +190,30 @@ void World::adaptPlayerPosition()
     sf::FloatRect viewBounds = getViewBounds();
     const float borderDistance = 40.f;
 
-    sf::Vector2f position = mPlayerShip->getPosition();
-    position.x = std::max(position.x, viewBounds.left + borderDistance);
-    position.x = std::min(position.x, viewBounds.left + viewBounds.width - borderDistance);
-    position.y = std::max(position.y, viewBounds.top + borderDistance);
-    position.y = std::min(position.y, viewBounds.top + viewBounds.height - borderDistance);
-    mPlayerShip->setPosition(position);
+    FOREACH(Ship* ship, mPlayerShips)
+    {
+        sf::Vector2f position = ship->getPosition();
+        position.x = std::max(position.x, viewBounds.left + borderDistance);
+        position.x = std::min(position.x, viewBounds.left + viewBounds.width - borderDistance);
+        position.y = std::max(position.y, viewBounds.top + borderDistance);
+        position.y = std::min(position.y, viewBounds.top + viewBounds.height - borderDistance);
+        ship->setPosition(position);
+    }
 }
 
 void World::adaptPlayerVelocity()
 {
-    sf::Vector2f velocity = mPlayerShip->getVelocity();
+    FOREACH(Ship* ship, mPlayerShips)
+    {
+        sf::Vector2f velocity = ship->getVelocity();
 
-    // If moving diagonally, reduce velocity (to have always same velocity)
-    if (velocity.x != 0.f && velocity.y != 0.f)
-        mPlayerShip->setVelocity(velocity / std::sqrt(2.f));
+        // If moving diagonally, reduce velocity (to have always same velocity)
+        if (velocity.x != 0.f && velocity.y != 0.f)
+            ship->setVelocity(velocity / std::sqrt(2.f));
 
-    // Add scrolling velocity
-    mPlayerShip->accelerate(0.f, mScrollSpeed);
+        // Add scrolling velocity
+        ship->accelerate(0.f, mScrollSpeed);
+    }
 }
 
 bool matchesCategories(SceneNode::Pair& colliders, Category::Type type1, Category::Type type2)
@@ -152,7 +235,6 @@ bool matchesCategories(SceneNode::Pair& colliders, Category::Type type1, Categor
     {
         return false;
     }
-
 }
 
 void World::handleCollisions()
@@ -180,12 +262,11 @@ void World::handleCollisions()
             // Apply pickup effect to player, destroy projectile
             pickup.apply(player);
             pickup.destroy();
-
             player.playLocalSound(mCommandQueue, SoundEffect::CollectPickup);
         }
 
         else if (matchesCategories(pair, Category::EnemyShip, Category::AlliedProjectile)
-            || matchesCategories(pair, Category::PlayerShip, Category::EnemyProjectile))
+              || matchesCategories(pair, Category::PlayerShip, Category::EnemyProjectile))
         {
             auto& ship = static_cast<Ship&>(*pair.first);
             auto& projectile = static_cast<Projectile&>(*pair.second);
@@ -199,8 +280,25 @@ void World::handleCollisions()
 
 void World::updateSounds()
 {
+    sf::Vector2f listenerPosition;
+
+    // 0 players (multiplayer mode, until server is connected) -> view center
+    if (mPlayerShips.empty())
+    {
+        listenerPosition = mWorldView.getCenter();
+    }
+
+    // 1 or more players -> mean position between all ships
+    else
+    {
+        FOREACH(Ship* ship, mPlayerShips)
+            listenerPosition += ship->getWorldPosition();
+
+        listenerPosition /= static_cast<float>(mPlayerShips.size());
+    }
+
     // Set listener's position to player position
-    mSounds.setListenerPosition(mPlayerShip->getWorldPosition());
+    mSounds.setListenerPosition(listenerPosition);
 
     // Remove unused sounds
     mSounds.removeStoppedSounds();
@@ -236,6 +334,7 @@ void World::buildScene()
     sf::Texture& finishTexture = mTextures.get(Textures::FinishLine);
     std::unique_ptr<SpriteNode> finishSprite(new SpriteNode(finishTexture));
     finishSprite->setPosition(0.f, -76.f);
+    mFinishSprite = finishSprite.get();
     mSceneLayers[Background]->attachChild(std::move(finishSprite));
 
     // Add particle node to the scene
@@ -250,11 +349,13 @@ void World::buildScene()
     std::unique_ptr<SoundNode> soundNode(new SoundNode(mSounds));
     mSceneGraph.attachChild(std::move(soundNode));
 
-    // Add player's ship
-    std::unique_ptr<Ship> player(new Ship(Ship::Eagle, mTextures, mFonts));
-    mPlayerShip = player.get();
-    mPlayerShip->setPosition(mSpawnPosition);
-    mSceneLayers[UpperSpace]->attachChild(std::move(player));
+    // Add network node, if necessary
+    if (mNetworkedWorld)
+    {
+        std::unique_ptr<NetworkNode> networkNode(new NetworkNode());
+        mNetworkNode = networkNode.get();
+        mSceneGraph.attachChild(std::move(networkNode));
+    }
 
     // Add enemy ships
     addEnemies();
@@ -262,6 +363,10 @@ void World::buildScene()
 
 void World::addEnemies()
 {
+    if (mNetworkedWorld)
+        return;
+
+    // Add enemies to the spawn point container
     addEnemy(Ship::Raptor,    0.f,  500.f);
     addEnemy(Ship::Raptor,    0.f, 1000.f);
     addEnemy(Ship::Raptor, +100.f, 1150.f);
@@ -288,7 +393,11 @@ void World::addEnemies()
     addEnemy(Ship::Raptor,  200.f, 4200.f);
     addEnemy(Ship::Raptor,    0.f, 4400.f);
 
+    sortEnemies();
+}
 
+void World::sortEnemies()
+{
     // Sort all enemies according to their y value, such that lower enemies are checked first for spawning
     std::sort(mEnemySpawnPoints.begin(), mEnemySpawnPoints.end(), [] (SpawnPoint lhs, SpawnPoint rhs)
     {
@@ -313,6 +422,7 @@ void World::spawnEnemies()
         std::unique_ptr<Ship> enemy(new Ship(spawn.type, mTextures, mFonts));
         enemy->setPosition(spawn.x, spawn.y);
         enemy->setRotation(180.f);
+        if (mNetworkedWorld) enemy->disablePickups();
 
         mSceneLayers[UpperSpace]->attachChild(std::move(enemy));
 

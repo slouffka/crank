@@ -27,7 +27,7 @@ class State
 
         struct Context
         {
-                                Context(sf::RenderWindow& window, TextureManager& textures, FontManager& fonts, Player& player,
+                                Context(sf::RenderWindow& window, TextureManager& textures, FontManager& fonts,
                                     MusicPlayer& music, SoundPlayer& sounds, KeyBinding& keys1, KeyBinding& keys2);
 
             sf::RenderWindow*   window;
