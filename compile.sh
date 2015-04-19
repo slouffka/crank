@@ -1,5 +1,5 @@
 clang++ -std=c++11 -O3 -lsfml-window -lsfml-audio -lsfml-graphics -lsfml-system -o crank \
-
+                                \
     Animation.cpp               \
     Application.cpp             \
     Button.cpp                  \
