@@ -151,6 +151,19 @@ void Player::handleRealtimeInput(CommandQueue& commands)
     }
 }
 
+void Player::handleRealtimeNetworkInput(CommandQueue& commands)
+{
+    if (mSocket && !isLocal())
+    {
+        // Traverse all realtime input proxies. Because this is a networked game, the input isn't handled directly
+        FOREACH(auto pair, mActionProxies)
+        {
+            if (pair.second && isRealtimeAction(pair.first))
+                commands.push(mActionBinding[pair.first]);
+        }
+    }
+}
+
 void Player::handleNetworkEvent(Action action, CommandQueue& commands)
 {
     commands.push(mActionBinding[action]);

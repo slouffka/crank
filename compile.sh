@@ -1,4 +1,4 @@
-clang++ -std=c++11 -O3 -lsfml-window -lsfml-audio -lsfml-graphics -lsfml-system -o crank \
+clang++ -std=c++11 -O3 -lsfml-audio -lsfml-window -lsfml-graphics -lsfml-network -lsfml-system -o crank \
                                 \
     Animation.cpp               \
     Application.cpp             \

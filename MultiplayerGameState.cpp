@@ -222,7 +222,7 @@ bool MultiplayerGameState::update(sf::Time dt)
             FOREACH(sf::Int32 identifier, mLocalPlayerIdentifiers)
             {
                 if (Ship* ship = mWorld.getShip(identifier))
-                    positionUpdatePacket << identifier << ship->getPosition().x << ship->getPosition().y << static_cast<sf::Int32>(ship->getHitpoints()) << static_cast<sf::Int32>(ship->getMissileAmmo())
+                    positionUpdatePacket << identifier << ship->getPosition().x << ship->getPosition().y << static_cast<sf::Int32>(ship->getHitpoints()) << static_cast<sf::Int32>(ship->getMissileAmmo());
             }
 
             mSocket.send(positionUpdatePacket);

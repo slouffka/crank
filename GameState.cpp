@@ -6,9 +6,10 @@
 
 GameState::GameState(StateStack& stack, Context context)
 : State(stack, context)
-, mWorld(*context.window, *context.fonts, *context.sounds)
-, mPlayer(*context.player)
+, mWorld(*context.window, *context.fonts, *context.sounds, false)
+, mPlayer(nullptr, 1, context.keys1)
 {
+    mWorld.addShip(1);
     mPlayer.setMissionStatus(Player::MissionRunning);
 
     // Play game theme
@@ -32,7 +33,7 @@ bool GameState::update(sf::Time dt)
     else if (mWorld.hasPlayerReachedEnd())
     {
         mPlayer.setMissionStatus(Player::MissionSuccess);
-        requestStackPush(States::GameOver);
+        requestStackPush(States::MissionSuccess);
     }
 
     CommandQueue& commands = mWorld.getCommandQueue();

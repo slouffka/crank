@@ -35,8 +35,6 @@ class Application
         sf::RenderWindow        mWindow;
         TextureManager          mTextures;
         FontManager             mFonts;
-        Player                  mPlayer;
-
         MusicPlayer             mMusic;
         SoundPlayer             mSounds;
 
