@@ -35,3 +35,18 @@ out what the hell has happened.
 
 * SFML Game Development Book Source Code (https://github.com/LaurentGomila/SFML-Game-Development-Book)
 * SFML City Building Game Tutorial (https://www.binpress.com/tutorial/creating-a-city-building-game-with-sfml/137)
+
+# Building using CMake / Ninja
+
+Generate Ninja files by running:
+
+```
+$ cd src
+$ cmake -G Ninja .
+```
+
+After generation finished run Ninja with simply:
+
+```
+$ ninja
+```
