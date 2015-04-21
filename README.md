@@ -18,10 +18,10 @@ Book & Game progress:
 * 07 Gameplay:      Game Rules, Enemies, Projectiles, Collision Detection, Pickups, GameOver.
 * 08 Graphics:      Particle System, Smoke, Propellant, Shaders, PostEffect, BloomEffect.
 * 09 Audio:         Positional Sound Effects, Game Music, Shooting, Explosion sounds.
+* 10 Network:       Realtime Game Server.
 
 On the way:
 
-* 10 Network:       Realtime Game Server.
 * 11 Entities:      Entity Component System.
 * 12 Scripting:     Scripting Language, Text Based Configuration, Entity Definitions.
 

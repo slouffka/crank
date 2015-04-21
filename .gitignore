@@ -1,2 +1,7 @@
 .ycm_extra_conf.pyc
-crank
+bin/crank
+src/cmake_install.cmake
+src/CMake*
+src/.ninja*
+src/build.ninja
+src/rules.ninja
