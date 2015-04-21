@@ -79,6 +79,8 @@ MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, b
     else
         mFailedConnectionClock.restart();
 
+    mSocket.setBlocking(false);
+
     // Play game theme
     context.music->play(Music::MissionTheme);
 }
@@ -200,7 +202,7 @@ bool MultiplayerGameState::update(sf::Time dt)
             mPlayerInvitationTime = sf::Time::Zero;
 
         // Events occuring in the game
-        /* GameActions::Action gameAction;
+        GameActions::Action gameAction;
         while (mWorld.pollGameAction(gameAction))
         {
             sf::Packet packet;
@@ -227,7 +229,7 @@ bool MultiplayerGameState::update(sf::Time dt)
 
             mSocket.send(positionUpdatePacket);
             mTickClock.restart();
-        } */
+        }
 
         mTimeSinceLastPacket += dt;
     }

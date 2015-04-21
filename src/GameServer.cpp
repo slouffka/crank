@@ -83,7 +83,6 @@ void GameServer::notifyPlayerSpawn(sf::Int32 shipIdentifier)
             sf::Packet packet;
             packet << static_cast<sf::Int32>(Server::PlayerConnect);
             packet << shipIdentifier << mShipInfo[shipIdentifier].position.x << mShipInfo[shipIdentifier].position.y;
-
             mPeers[i]->socket.send(packet);
         }
     }
@@ -350,7 +349,6 @@ void GameServer::handleIncomingPacket(sf::Packet& packet, RemotePeer& receivingP
                 packet << x;
                 packet << y;
 
-
                 sendToAll(packet);
             }
         }
@@ -402,7 +400,7 @@ void GameServer::handleIncomingConnections()
 
         if (mConnectedPlayers >= mMaxConnectedPlayers)
             setListening(false);
-        else
+        else // Add a new waiting peer
             mPeers.push_back(PeerPtr(new RemotePeer()));
     }
 }
