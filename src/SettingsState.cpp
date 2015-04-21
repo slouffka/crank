@@ -102,12 +102,12 @@ void SettingsState::addButtonLabel(std::size_t index, std::size_t x, std::size_t
     index += PlayerAction::Count * x;
 
     mBindingButtons[index] = std::make_shared<GUI::Button>(context);
-    mBindingButtons[index]->setPosition(80.f, y);
+    mBindingButtons[index]->setPosition(400.f * x + 80.f, 50.f * y + 300.f);
     mBindingButtons[index]->setText(text);
     mBindingButtons[index]->setToggle(true);
 
     mBindingLabels[index] = std::make_shared<GUI::Label>("", *context.fonts);
-    mBindingLabels[index]->setPosition(400.f * x, 50.f * y + 315.f);
+    mBindingLabels[index]->setPosition(400.f * x + 300.f, 50.f * y + 315.f);
 
     mGUIContainer.pack(mBindingButtons[index]);
     mGUIContainer.pack(mBindingLabels[index]);
