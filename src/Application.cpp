@@ -14,7 +14,7 @@
 const sf::Time Application::TimePerFrame = sf::seconds(1.f / 60.f);
 
 Application::Application()
-: mWindow(sf::VideoMode(1024, 768), "Crank 08-Gameplay", sf::Style::Close)
+: mWindow(sf::VideoMode(1024, 768), "Crank 10 - Multiplayer", sf::Style::Close)
 , mTextures()
 , mFonts()
 , mMusic()

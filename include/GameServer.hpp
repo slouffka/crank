@@ -29,13 +29,13 @@ class GameServer
         // A GameServerRemotePeer refers to one instance of the game, may it be local or from another computer
         struct RemotePeer
         {
-                                    RemotePeer();
+                                        RemotePeer();
 
-            sf::TcpSocket           socket;
-            sf::Time                lastPacketTime;
-            std::vector<sf::Int32>  shipIdentifiers;
-            bool                    ready;
-            bool                    timedOut;
+            sf::TcpSocket               socket;
+            sf::Time                    lastPacketTime;
+            std::vector<sf::Int32>      shipIdentifiers;
+            bool                        ready;
+            bool                        timedOut;
         };
 
         // Structure to store information about current ship state

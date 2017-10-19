@@ -95,7 +95,6 @@ void GameServer::setListening(bool enable)
     {
         if (!mListeningState)
             mListeningState = (mListenerSocket.listen(ServerPort) == sf::TcpListener::Done);
-
     }
     else
     {
@@ -155,6 +154,7 @@ void GameServer::tick()
         if (pair.second.position.y > 0.f)
             allShipsDone = false;
     }
+
     if (allShipsDone)
     {
         sf::Packet missionSuccessPacket;
