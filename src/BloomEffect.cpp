@@ -53,7 +53,7 @@ void BloomEffect::filterBright(const sf::RenderTexture& input, sf::RenderTexture
 {
     sf::Shader& brightness = mShaders.get(Shaders::BrightnessPass);
 
-    brightness.setParameter("source", input.getTexture());
+    brightness.setUniform("source", input.getTexture());
     applyShader(brightness, output);
     output.display();
 }
@@ -73,8 +73,8 @@ void BloomEffect::blur(const sf::RenderTexture& input, sf::RenderTexture& output
 {
     sf::Shader& gaussianBlur = mShaders.get(Shaders::GaussianBlurPass);
 
-    gaussianBlur.setParameter("source", input.getTexture());
-    gaussianBlur.setParameter("offsetFactor", offsetFactor);
+    gaussianBlur.setUniform("source", input.getTexture());
+    gaussianBlur.setUniform("offsetFactor", offsetFactor);
     applyShader(gaussianBlur, output);
     output.display();
 }
@@ -83,8 +83,8 @@ void BloomEffect::downsample(const sf::RenderTexture& input, sf::RenderTexture& 
 {
     sf::Shader& downSampler = mShaders.get(Shaders::DownSamplePass);
 
-    downSampler.setParameter("source", input.getTexture());
-    downSampler.setParameter("sourceSize", sf::Vector2f(input.getSize()));
+    downSampler.setUniform("source", input.getTexture());
+    downSampler.setUniform("sourceSize", sf::Vector2f(input.getSize()));
     applyShader(downSampler, output);
     output.display();
 }
@@ -93,7 +93,7 @@ void BloomEffect::add(const sf::RenderTexture& source, const sf::RenderTexture& 
 {
     sf::Shader& adder = mShaders.get(Shaders::AddPass);
 
-    adder.setParameter("source", source.getTexture());
-    adder.setParameter("bloom", bloom.getTexture());
+    adder.setUniform("source", source.getTexture());
+    adder.setUniform("bloom", bloom.getTexture());
     applyShader(adder, output);
 }

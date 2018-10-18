@@ -44,7 +44,7 @@ MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, b
 
     mPlayerInvitationText.setFont(context.fonts->get(Fonts::Main));
     mPlayerInvitationText.setCharacterSize(20);
-    mPlayerInvitationText.setColor(sf::Color::White);
+    mPlayerInvitationText.setFillColor(sf::Color::White);
     mPlayerInvitationText.setString("Press Enter to spawn player 2");
     mPlayerInvitationText.setPosition(1000 - mPlayerInvitationText.getLocalBounds().width, 760 - mPlayerInvitationText.getLocalBounds().height);
 
@@ -52,7 +52,7 @@ MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, b
     mFailedConnectionText.setFont(context.fonts->get(Fonts::Main));
     mFailedConnectionText.setString("Attempting to connect...");
     mFailedConnectionText.setCharacterSize(35);
-    mFailedConnectionText.setColor(sf::Color::White);
+    mFailedConnectionText.setFillColor(sf::Color::White);
     centerOrigin(mFailedConnectionText);
     mFailedConnectionText.setPosition(mWindow.getSize().x / 2.f, mWindow.getSize().y / 2.f);
 
