@@ -1,6 +1,5 @@
 #include "GameServer.hpp"
 #include "NetworkProtocol.hpp"
-#include "Foreach.hpp"
 #include "Utility.hpp"
 #include "Pickup.hpp"
 #include "Ship.hpp"
@@ -148,7 +147,7 @@ void GameServer::tick()
 
     // Check for mission success = all ships with position.y < offset
     bool allShipsDone = true;
-    FOREACH(auto pair, mShipInfo)
+    for (auto pair : mShipInfo)
     {
         // As long as noe player has not crossed the finish line yet, set variable to false
         if (pair.second.position.y > 0.f)
@@ -220,7 +219,7 @@ void GameServer::handleIncomingPackets()
 {
     bool detectedTimeout = false;
 
-    FOREACH(PeerPtr& peer, mPeers)
+    for (PeerPtr& peer : mPeers)
     {
         if (peer->ready)
         {
@@ -296,7 +295,7 @@ void GameServer::handleIncomingPacket(sf::Packet& packet, RemotePeer& receivingP
             mShipCount++;
 
             // Inform every other peer about this new ship
-            FOREACH(PeerPtr& peer, mPeers)
+            for (PeerPtr& peer : mPeers)
             {
                 if (peer.get() != &receivingPeer && peer->ready)
                 {
@@ -362,7 +361,7 @@ void GameServer::updateClientState()
     updateClientStatePacket << static_cast<float>(mBattleFieldRect.top + mBattleFieldRect.height);
     updateClientStatePacket << static_cast<sf::Int32>(mShipInfo.size());
 
-    FOREACH(auto ship, mShipInfo)
+    for (auto ship : mShipInfo)
         updateClientStatePacket << ship.first << ship.second.position.x << ship.second.position.y;
 
     sendToAll(updateClientStatePacket);
@@ -412,7 +411,7 @@ void GameServer::handleDisconnections()
         if ((*itr)->timedOut)
         {
             // Inform everyone of the disconnection, erase
-            FOREACH(sf::Int32 identifier, (*itr)->shipIdentifiers)
+            for (sf::Int32 identifier : (*itr)->shipIdentifiers)
             {
                 sendToAll(sf::Packet() << static_cast<sf::Int32>(Server::PlayerDisconnect) << identifier);
 
@@ -452,7 +451,7 @@ void GameServer::informWorldState(sf::TcpSocket& socket)
     {
         if (mPeers[i]->ready)
         {
-            FOREACH(sf::Int32 identifier, mPeers[i]->shipIdentifiers)
+            for (sf::Int32 identifier : mPeers[i]->shipIdentifiers)
                 packet << identifier << mShipInfo[identifier].position.x << mShipInfo[identifier].position.y << mShipInfo[identifier].hitpoints << mShipInfo[identifier].missileAmmo;
         }
     }
@@ -477,7 +476,7 @@ void GameServer::broadcastMessage(const std::string& message)
 
 void GameServer::sendToAll(sf::Packet& packet)
 {
-    FOREACH(PeerPtr& peer, mPeers)
+    for (PeerPtr& peer : mPeers)
     {
         if (peer->ready)
             peer->socket.send(packet);

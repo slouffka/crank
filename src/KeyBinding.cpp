@@ -1,5 +1,4 @@
 #include "KeyBinding.hpp"
-#include "Foreach.hpp"
 
 #include <string>
 #include <algorithm>
@@ -47,7 +46,7 @@ void KeyBinding::assignKey(Action action, sf::Keyboard::Key key)
 
 sf::Keyboard::Key KeyBinding::getAssignedKey(Action action) const
 {
-    FOREACH(auto pair, mKeyMap)
+    for (auto pair : mKeyMap)
     {
         if (pair.second == action)
             return pair.first;
@@ -75,7 +74,7 @@ std::vector<KeyBinding::Action> KeyBinding::getRealtimeActions() const
     // Return all realtime actions that are currently active.
     std::vector<Action> actions;
 
-    FOREACH(auto pair, mKeyMap)
+    for (auto pair : mKeyMap)
     {
         // If key is pressed and an action is a realtime action, store it
         if (sf::Keyboard::isKeyPressed(pair.first) && isRealtimeAction(pair.second))

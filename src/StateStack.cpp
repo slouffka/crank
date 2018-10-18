@@ -1,5 +1,4 @@
 #include "StateStack.hpp"
-#include "Foreach.hpp"
 
 #include <cassert>
 
@@ -27,7 +26,7 @@ void StateStack::update(sf::Time dt)
 void StateStack::draw()
 {
     // Draw all active states from bottom to top
-    FOREACH(State::Ptr& state, mStack)
+    for (State::Ptr& state : mStack)
         state->draw();
 }
 
@@ -73,7 +72,7 @@ State::Ptr StateStack::createState(States::ID stateID)
 
 void StateStack::applyPendingChanges()
 {
-    FOREACH(PendingChange change, mPendingList)
+    for (PendingChange change : mPendingList)
     {
         switch (change.action)
         {
@@ -90,7 +89,7 @@ void StateStack::applyPendingChanges()
                 break;
 
             case Clear:
-                FOREACH(State::Ptr& state, mStack)
+                for (State::Ptr& state : mStack)
                     state->onDestroy();
 
                 mStack.clear();

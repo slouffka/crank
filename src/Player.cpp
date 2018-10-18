@@ -1,7 +1,6 @@
 #include "Player.hpp"
 #include "CommandQueue.hpp"
 #include "Ship.hpp"
-#include "Foreach.hpp"
 #include "NetworkProtocol.hpp"
 
 #include <SFML/Network/Packet.hpp>
@@ -73,7 +72,7 @@ Player::Player(sf::TcpSocket* socket, sf::Int32 identifier, const KeyBinding* bi
     initializeActions();
 
     // Assign all categories to player's aircraft
-    FOREACH(auto& pair, mActionBinding)
+    for (auto& pair : mActionBinding)
         pair.second.category = Category::PlayerShip;
 }
 
@@ -128,7 +127,7 @@ bool Player::isLocal() const
 
 void Player::disableAllRealtimeActions()
 {
-    FOREACH(auto& action, mActionProxies)
+    for (auto& action : mActionProxies)
     {
         sf::Packet packet;
         packet << static_cast<sf::Int32>(Client::PlayerRealtimeChange);
@@ -146,7 +145,7 @@ void Player::handleRealtimeInput(CommandQueue& commands)
     {
         // Lookup all actions and push corresponding commands to queue
         std::vector<Action> activeActions = mKeyBinding->getRealtimeActions();
-        FOREACH(Action action, activeActions)
+        for (Action action : activeActions)
             commands.push(mActionBinding[action]);
     }
 }
@@ -156,7 +155,7 @@ void Player::handleRealtimeNetworkInput(CommandQueue& commands)
     if (mSocket && !isLocal())
     {
         // Traverse all realtime input proxies. Because this is a networked game, the input isn't handled directly
-        FOREACH(auto pair, mActionProxies)
+        for (auto pair : mActionProxies)
         {
             if (pair.second && isRealtimeAction(pair.first))
                 commands.push(mActionBinding[pair.first]);

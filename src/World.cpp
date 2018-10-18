@@ -1,7 +1,6 @@
 #include "World.hpp"
 #include "Projectile.hpp"
 #include "Pickup.hpp"
-#include "Foreach.hpp"
 #include "TextNode.hpp"
 #include "ParticleNode.hpp"
 #include "SoundNode.hpp"
@@ -53,7 +52,7 @@ void World::update(sf::Time dt)
     // Scroll the world, reset player velocity
     mWorldView.move(0.f, mScrollSpeed * dt.asSeconds() * mScrollSpeedCompensation);
 
-    FOREACH(Ship* ship, mPlayerShips)
+    for (Ship* ship : mPlayerShips)
         ship->setVelocity(0.f, 0.f);
 
     // Setup commands to destroy entities, and guide missiles
@@ -108,7 +107,7 @@ CommandQueue& World::getCommandQueue()
 
 Ship* World::getShip(int identifier) const
 {
-    FOREACH(Ship* ship, mPlayerShips)
+    for (Ship* ship : mPlayerShips)
     {
         if (ship->getIdentifier() == identifier)
             return ship;
@@ -190,7 +189,7 @@ void World::adaptPlayerPosition()
     sf::FloatRect viewBounds = getViewBounds();
     const float borderDistance = 40.f;
 
-    FOREACH(Ship* ship, mPlayerShips)
+    for (Ship* ship : mPlayerShips)
     {
         sf::Vector2f position = ship->getPosition();
         position.x = std::max(position.x, viewBounds.left + borderDistance);
@@ -203,7 +202,7 @@ void World::adaptPlayerPosition()
 
 void World::adaptPlayerVelocity()
 {
-    FOREACH(Ship* ship, mPlayerShips)
+    for (Ship* ship : mPlayerShips)
     {
         sf::Vector2f velocity = ship->getVelocity();
 
@@ -242,7 +241,7 @@ void World::handleCollisions()
     std::set<SceneNode::Pair> collisionPairs;
     mSceneGraph.checkSceneCollision(mSceneGraph, collisionPairs);
 
-    FOREACH(SceneNode::Pair pair, collisionPairs)
+    for (SceneNode::Pair pair : collisionPairs)
     {
         if (matchesCategories(pair, Category::PlayerShip, Category::EnemyShip))
         {
@@ -291,7 +290,7 @@ void World::updateSounds()
     // 1 or more players -> mean position between all ships
     else
     {
-        FOREACH(Ship* ship, mPlayerShips)
+        for (Ship* ship : mPlayerShips)
             listenerPosition += ship->getWorldPosition();
 
         listenerPosition /= static_cast<float>(mPlayerShips.size());
@@ -468,7 +467,7 @@ void World::guideMissiles()
         Ship* closestEnemy = nullptr;
 
         // Find closest enemy
-        FOREACH(Ship* enemy, mActiveEnemies)
+        for (Ship* enemy : mActiveEnemies)
         {
             float enemyDistance = distance(missile, *enemy);
 

@@ -1,5 +1,4 @@
 #include "Container.hpp"
-#include "Foreach.hpp"
 
 #include <SFML/Window/Event.hpp>
 #include <SFML/Graphics/RenderStates.hpp>
@@ -57,7 +56,7 @@ void Container::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
     states.transform *= getTransform();
 
-    FOREACH(const Component::Ptr& child, mChildren)
+    for (const Component::Ptr& child : mChildren)
         target.draw(*child, states);
 }
 

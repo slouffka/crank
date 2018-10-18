@@ -1,6 +1,5 @@
 #include "MultiplayerGameState.hpp"
 #include "MusicPlayer.hpp"
-#include "Foreach.hpp"
 #include "Utility.hpp"
 
 #include <SFML/Graphics/RenderWindow.hpp>
@@ -162,13 +161,13 @@ bool MultiplayerGameState::update(sf::Time dt)
         if (mActiveState && mHasFocus)
         {
             CommandQueue& commands = mWorld.getCommandQueue();
-            FOREACH(auto& pair, mPlayers)
+            for (auto& pair : mPlayers)
                 pair.second->handleRealtimeInput(commands);
         }
 
         // Always handle the network input
         CommandQueue& commands = mWorld.getCommandQueue();
-        FOREACH(auto& pair, mPlayers)
+        for (auto& pair : mPlayers)
             pair.second->handleRealtimeNetworkInput(commands);
 
         // Handle messages from server that may have arrived
@@ -221,7 +220,7 @@ bool MultiplayerGameState::update(sf::Time dt)
             positionUpdatePacket << static_cast<sf::Int32>(Client::PositionUpdate);
             positionUpdatePacket << static_cast<sf::Int32>(mLocalPlayerIdentifiers.size());
 
-            FOREACH(sf::Int32 identifier, mLocalPlayerIdentifiers)
+            for (sf::Int32 identifier : mLocalPlayerIdentifiers)
             {
                 if (Ship* ship = mWorld.getShip(identifier))
                     positionUpdatePacket << identifier << ship->getPosition().x << ship->getPosition().y << static_cast<sf::Int32>(ship->getHitpoints()) << static_cast<sf::Int32>(ship->getMissileAmmo());
@@ -248,7 +247,7 @@ void MultiplayerGameState::disableAllRealtimeActions()
 {
     mActiveState = false;
 
-    FOREACH(sf::Int32 identifier, mLocalPlayerIdentifiers)
+    for (sf::Int32 identifier : mLocalPlayerIdentifiers)
         mPlayers[identifier]->disableAllRealtimeActions();
 }
 
@@ -258,7 +257,7 @@ bool MultiplayerGameState::handleEvent(const sf::Event& event)
     CommandQueue& commands = mWorld.getCommandQueue();
 
     // Forward event to all players
-    FOREACH(auto& pair, mPlayers)
+    for (auto& pair : mPlayers)
         pair.second->handleEvent(event, commands);
 
     if (event.type == sf::Event::KeyPressed)
