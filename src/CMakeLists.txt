@@ -47,47 +47,7 @@ endif()
 
 ######################
 
-set(SOURCES
-    Ship.cpp
-    Animation.cpp
-    Application.cpp
-    Button.cpp
-    BloomEffect.cpp
-    Command.cpp
-    CommandQueue.cpp
-    Component.cpp
-    Container.cpp
-    DataTables.cpp
-    EmitterNode.cpp
-    Entity.cpp
-    GameOverState.cpp
-    GameServer.cpp
-    GameState.cpp
-    KeyBinding.cpp
-    Label.cpp
-    LoadingState.cpp
-    MenuState.cpp
-    MultiplayerGameState.cpp
-    MusicPlayer.cpp
-    NetworkNode.cpp
-    PauseState.cpp
-    ParallelTask.cpp
-    ParticleNode.cpp
-    Pickup.cpp
-    Player.cpp
-    PostEffect.cpp
-    Projectile.cpp
-    SceneNode.cpp
-    SettingsState.cpp
-    SpriteNode.cpp
-    TextNode.cpp
-    SoundNode.cpp
-    SoundPlayer.cpp
-    State.cpp
-    StateStack.cpp
-    TitleState.cpp
-    Utility.cpp
-    World.cpp)
+file(GLOB_RECURSE SOURCES *.cpp)
 
 set(PROJECT_DIR "${PROJECT_SOURCE_DIR}/..")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_DIR}/bin)
